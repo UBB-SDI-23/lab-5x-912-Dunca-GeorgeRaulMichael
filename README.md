@@ -5,12 +5,6 @@ To make things easier with deployments, you will be using this repository for a 
 Commit and push everything to this repository.
 
 
-# Lab 5x requirements
-
-A new assignment requirement will appear here every week, so check back regularly. Commit and push everything to your **Lab-5x** repository.
-
-----
-----
 
 ## Lab 5 assignment
 
