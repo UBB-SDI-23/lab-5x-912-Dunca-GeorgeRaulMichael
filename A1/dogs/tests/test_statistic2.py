@@ -1,19 +1,6 @@
-import json
-import random
-from unittest import TestCase, mock
-
-from django.contrib.auth.models import User
-from django.db.models import Avg, Count
-from django.urls import reverse
-from rest_framework.authtoken.models import Token
-from rest_framework.response import Response
-from rest_framework.test import APITestCase, APIClient, APIRequestFactory
-from rest_framework import status
-from dogs.models import Dog, Toy, Owner, DogOwner
-from dogs.serializers import DogsSerializer, ToySerializer
-from dogs.views import ToysList
-
-
+from rest_framework.test import APITestCase
+from dogs.models import Dog, Owner, DogOwner
+from dogs.serializers import DogsSerializer
 
 
 class Stats2Test(APITestCase):

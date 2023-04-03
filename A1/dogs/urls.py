@@ -16,21 +16,21 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, re_path
 from drf_spectacular.views import SpectacularAPIView,SpectacularSwaggerView
+from dogs.views import DogsViews, ToysViews, OwnersViews, DogOwnersViews
 
-from dogs import  views
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('dogs/',views.DogsList.as_view()),
-    path('dogs/<int:id>',views.DogsDetails.as_view()),
-    path('toys/', views.ToysList.as_view()),
-    path('toys/<int:id>', views.ToysDetails.as_view()),
-    path('owners/', views.OwnersList.as_view()),
-    path('owners/<int:id>', views.OwnersDetails.as_view()),
-    path('dogowners/', views.DogOwnersList.as_view()),
-    path('dogs/<int:dog_id>/owners',views.BulkAddOwnerstoDog.as_view()),
-    path('dogowners/<int:id_dog>/<int:id_owner>', views.DogOwnersDetails.as_view()),
-    path('dogs/avg-by-toy-price', views.DogsOrderedByToyPrice.as_view()),
-    path('dogs/nr-of-owners', views.DogsOrderedByToysPossessed.as_view()),
+    path('dogs/',DogsViews.DogsList.as_view()),
+    path('dogs/<int:id>',DogsViews.DogsDetails.as_view()),
+    path('toys/', ToysViews.ToysList.as_view()),
+    path('toys/<int:id>', ToysViews.ToysDetails.as_view()),
+    path('owners/', OwnersViews.OwnersList.as_view()),
+    path('owners/<int:id>', OwnersViews.OwnersDetails.as_view()),
+    path('dogowners/', DogOwnersViews.DogOwnersList.as_view()),
+    path('dogs/<int:dog_id>/owners',DogsViews.BulkAddOwnerstoDog.as_view()),
+    path('dogowners/<int:id_dog>/<int:id_owner>', DogOwnersViews.DogOwnersDetails.as_view()),
+    path('dogs/avg-by-toy-price', DogsViews.DogsOrderedByToyPrice.as_view()),
+    path('dogs/nr-of-owners', DogsViews.DogsOrderedByToysPossessed.as_view()),
     path('api/schema/', SpectacularAPIView.as_view(),name="schema"),
     path('api/schema/docs/',SpectacularSwaggerView.as_view(url_name="schema")),
 ]

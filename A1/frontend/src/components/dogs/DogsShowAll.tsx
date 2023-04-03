@@ -79,7 +79,6 @@ import { BACKEND_API_URL } from "../../constants";
   
     useEffect(() => {
       setLoading(true);
-      console.log(`${BACKEND_API_URL}/dogs/`)
       fetch(`${BACKEND_API_URL}/dogs/`)
         .then((response) => response.json())
         .then((data) => {
