@@ -3,7 +3,7 @@ import { Dogs } from "./Dogs";
 export interface Toys
 {
     id: number;
-    number: string;
+    name: string;
     dog: Dogs;
     material: string;
     colour: string;

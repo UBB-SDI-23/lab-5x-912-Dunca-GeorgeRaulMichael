@@ -1,3 +1,6 @@
+import { DogOwners } from "./DogOwner";
+import { Dogs } from "./Dogs";
+
 export interface Owners
 {
     id: number;
@@ -5,6 +8,6 @@ export interface Owners
     last_name: string;
     email: string;
     city: string;
-    date_of_birth: Date;
-    
+    date_of_birth: string;
+    dogs?: Dogs[];
 }
