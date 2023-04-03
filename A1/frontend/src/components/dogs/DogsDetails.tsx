@@ -49,8 +49,8 @@ export const DogsDetails = () => {
 					</ul>
                     <p>Dog owners:</p>
 					<ul>
-						{dog?.owners?.map((owner) => (
-							<li key={owner.owner?.id}>{owner.owner?.last_name} {owner.owner?.first_name} from {owner.owner?.city}</li>
+						{dog?.owners?.map((dog_owner) => (
+							<li key={dog_owner.owner?.id}>{dog_owner.owner?.last_name} {dog_owner.owner?.first_name} from {dog_owner.owner?.city}</li>
 						))}
 					</ul>
 					
