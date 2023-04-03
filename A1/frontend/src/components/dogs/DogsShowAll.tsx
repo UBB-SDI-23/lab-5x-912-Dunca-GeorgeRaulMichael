@@ -95,7 +95,7 @@ import { BACKEND_API_URL } from "../../constants";
         {loading && <CircularProgress />}
         {!loading && dogs.length === 0 && <p>No dogs found</p>}
         {!loading && (
-          <IconButton component={Link} sx={{ mr: 3 }} to={`/dogs/add`}>
+          <IconButton component={Link} sx={{ mr: 3 }} to={`dogs/add`}>
             <Tooltip title="Add a new dog" arrow>
               <AddIcon color="primary" />
             </Tooltip>
@@ -122,7 +122,7 @@ import { BACKEND_API_URL } from "../../constants";
                       {index + 1}
                     </TableCell>
                     <TableCell component="th" scope="row">
-                      <Link to={`/dogs/${dog.id}/details`} title="View dog details">
+                      <Link to={`dogs/${dog.id}/details`} title="View dog details">
                         {dog.name}
                       </Link>
                     </TableCell>
@@ -134,17 +134,17 @@ import { BACKEND_API_URL } from "../../constants";
                       <IconButton
                         component={Link}
                         sx={{ mr: 3 }}
-                        to={`/dogs/${dog.id}/details`}>
+                        to={`dogs/${dog.id}/details`}>
                         <Tooltip title="View dog details" arrow>
                           <ReadMoreIcon color="primary" />
                         </Tooltip>
                       </IconButton>
   
-                      <IconButton component={Link} sx={{ mr: 3 }} to={`/dogs/${dog.id}/edit`}>
+                      <IconButton component={Link} sx={{ mr: 3 }} to={`dogs/${dog.id}/edit`}>
                         <EditIcon />
                       </IconButton>
   
-                      <IconButton component={Link} sx={{ mr: 3 }} to={`/dogs/${dog.id}/delete`}>
+                      <IconButton component={Link} sx={{ mr: 3 }} to={`dogs/${dog.id}/delete`}>
                         <DeleteForeverIcon sx={{ color: "red" }} />
                       </IconButton>
                     </TableCell>
