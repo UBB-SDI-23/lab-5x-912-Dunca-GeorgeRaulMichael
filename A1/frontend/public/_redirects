@@ -1,0 +1,5 @@
+/dogs/* http://ec2-13-50-246-37.eu-north-1.compute.amazonaws.com/dogs/:splat 200!
+
+/averageprodyear/* ec2-13-50-246-37.eu-north-1.compute.amazonaws.com/dogs/avg-by-toy-price/:splat 200!
+
+/*    /index.html   200
