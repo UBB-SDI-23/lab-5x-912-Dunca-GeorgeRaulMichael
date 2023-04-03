@@ -1,4 +1,4 @@
-const PROD_BACKEND_API_URL = "/dogs";
+const PROD_BACKEND_API_URL = "/";
 const DEV_BACKEND_API_URL = "http://127.0.0.1:8000";
 
 export const BACKEND_API_URL =
