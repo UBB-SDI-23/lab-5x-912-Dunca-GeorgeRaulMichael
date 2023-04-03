@@ -62,6 +62,8 @@ function DogsShowAll () {
     Container,
     IconButton,
     Tooltip,
+    Toolbar,
+    Button,
   } from "@mui/material";
   import React from "react";
   import { useEffect, useState } from "react";
@@ -73,6 +75,7 @@ function DogsShowAll () {
 import { Dogs } from "../../models/Dogs";
 import { BACKEND_API_URL } from "../../constants";
   
+
   export const DogsShowAll = () => {
     const [loading, setLoading] = useState(false);
     const [dogs, setDogs] = useState<Dogs[]>([]);
@@ -86,7 +89,17 @@ import { BACKEND_API_URL } from "../../constants";
           setLoading(false);
         });
     }, []);
-  
+    
+    const orderByDateOfBirth = () => {
+      const sorted = [...dogs].sort((a, b) => {
+        const dateA = new Date(a.date_of_birth).getTime();
+        const dateB = new Date(b.date_of_birth).getTime();
+        return dateA - dateB;
+      });
+      setDogs(sorted);
+    }
+    
+
     return (
       <Container>
         <h1>All dogs</h1>
@@ -94,11 +107,17 @@ import { BACKEND_API_URL } from "../../constants";
         {loading && <CircularProgress />}
         {!loading && dogs.length === 0 && <p>No dogs found</p>}
         {!loading && (
+          <Toolbar>
           <IconButton component={Link} sx={{ mr: 3 }} to={`/dogs/add`}>
             <Tooltip title="Add a new dog" arrow>
               <AddIcon color="primary" />
             </Tooltip>
           </IconButton>
+          <Button
+          onClick={orderByDateOfBirth}
+          >Order ByDateOfBirth
+        </Button>
+        </Toolbar>
         )}
         {!loading && dogs.length > 0 && (
           <TableContainer component={Paper}>
