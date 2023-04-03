@@ -1,3 +1,4 @@
+import { DogOwners } from "./DogOwner";
 import { Owners } from "./Owners";
 import { Toys } from "./Toys";
 
@@ -9,7 +10,7 @@ export interface Dogs{
     is_healthy: boolean;
     date_of_birth: string;
     toys?: Toys[];
-    owners?: Owners[];
+    owners?: DogOwners[];
     avg_price?:number;
 
 }
