@@ -1,5 +1,5 @@
-const PROD_BACKEND_API_URL = "/";
-const DEV_BACKEND_API_URL = "ec2-13-50-246-37.eu-north-1.compute.amazonaws.com";
+const PROD_BACKEND_API_URL = "/dogs";
+const DEV_BACKEND_API_URL = "http://127.0.0.1:8000";
 
 export const BACKEND_API_URL =
 	process.env.NODE_ENV === "development" ? DEV_BACKEND_API_URL : PROD_BACKEND_API_URL;
