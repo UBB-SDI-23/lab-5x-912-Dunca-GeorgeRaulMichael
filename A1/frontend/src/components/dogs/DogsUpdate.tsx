@@ -47,10 +47,11 @@ const updateDog = async (event: { preventDefault: () => void }) => {
 };
 
    return (
+      <div style={{ marginTop:'200px'}}>
       <Container>
          <Card>
          <CardContent>
-            <IconButton component={Link} sx={{ mr: 3 }} to={`/dogs/${dogId}`}>
+            <IconButton component={Link} sx={{ mr: 3 }} to={`/dogs/${dogId}/details`}>
                <ArrowBackIcon />
             </IconButton>{" "}
             <form onSubmit={updateDog}>
@@ -105,5 +106,6 @@ const updateDog = async (event: { preventDefault: () => void }) => {
 				<CardActions></CardActions>
 			</Card>
 		</Container>
+      </div>
 	);
 };

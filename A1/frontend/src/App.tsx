@@ -35,7 +35,7 @@ function App() {
         </div>
     </React.Fragment>
     */
-   
+   <div style={{ backgroundColor: 'rgb(52, 52, 52)'}}>
     <React.Fragment >
 			<Router>
         <AppMenu />
@@ -53,7 +53,7 @@ function App() {
 			</Router>
       
 		</React.Fragment>
-
+    </div>
 
 
   )
