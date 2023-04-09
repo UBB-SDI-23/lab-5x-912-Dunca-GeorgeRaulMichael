@@ -34,7 +34,7 @@ export const DogsFilter= () => {
         .then(res => res.json())
         .then(data => {setDogs(data.results); setLoading(false);
         
-        console.log(data.results);
+        
         })
     }, []);
 

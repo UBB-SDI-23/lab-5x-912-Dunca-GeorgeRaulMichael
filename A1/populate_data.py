@@ -28,6 +28,7 @@ if __name__=='__main__':
 
     batch_size = 1000
     with open('dogs.sql', 'w') as file:
+
         sql = f"TRUNCATE TABLE dogs_dogowner RESTART IDENTITY CASCADE;"
         file.write(sql + "\n")
         sql = f"TRUNCATE TABLE dogs_owner RESTART IDENTITY CASCADE;"
@@ -95,3 +96,7 @@ if __name__=='__main__':
                     data.append(f"('{dogowner_dog}', '{dogowner_owner}', '{dogowner_adoption_date}', '{dogowner_adoption_fee}')")
             sql = f"INSERT INTO dogs_dogowner (dog_id, owner_id, adoption_date, adoption_fee) VALUES {','.join(data)};"
             file.write(sql + "\n")
+
+
+        sql = f"CREATE INDEX toy_price_idx ON dogs_toy(price);"
+        file.write(sql + "\n")
