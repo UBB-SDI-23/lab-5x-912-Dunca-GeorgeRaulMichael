@@ -105,14 +105,28 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
     const handleNextPage = () => {
       if (currentPage < totalPages) {
         setCurrentPage(currentPage + 1);
+        setLoading(true);
+        fetch(`${BACKEND_API_URL}/dogs/?p=${currentPage}`)
+        .then((response) => response.json())
+        .then((data) => {
+          setDogs(data);
+          setLoading(false);
+        });
         //console.log(currentPage);
       }
-    };
+    }
   
     const handlePrevPage = () => {
       if (currentPage > 1) {
         setCurrentPage(currentPage - 1);
-        //console.log(currentPage);
+        setLoading(true);
+        fetch(`${BACKEND_API_URL}/dogs/?p=${currentPage}`)
+        .then((response) => response.json())
+        .then((data) => {
+          setDogs(data);
+          setLoading(false);
+        });
+        //console.log(currentPage); 
       }
     };
 
