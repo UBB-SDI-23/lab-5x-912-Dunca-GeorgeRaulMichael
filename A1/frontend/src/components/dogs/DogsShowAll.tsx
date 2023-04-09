@@ -85,10 +85,12 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 
     useEffect(() => {
       setLoading(true);
-      fetch(`${BACKEND_API_URL}/dogs/`)
+      console.log(currentPage);
+      fetch(`${BACKEND_API_URL}/dogs/?p=${currentPage}`)
         .then((response) => response.json())
         .then((data) => {
-          setDogs(data);
+          setDogs(data.results);
+          
           setLoading(false);
         });
     }, []);
@@ -104,29 +106,33 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 
     const handleNextPage = () => {
       if (currentPage < totalPages) {
+        
         setCurrentPage(currentPage + 1);
+        console.log(currentPage);
         setLoading(true);
-        fetch(`${BACKEND_API_URL}/dogs/?p=${currentPage}`)
+        fetch(`${BACKEND_API_URL}/dogs/?p=${currentPage+1}`)
         .then((response) => response.json())
         .then((data) => {
-          setDogs(data);
+          setDogs(data.results);
           setLoading(false);
         });
-        //console.log(currentPage);
+        
       }
-    }
+    };
   
     const handlePrevPage = () => {
       if (currentPage > 1) {
+        
         setCurrentPage(currentPage - 1);
+        console.log(currentPage);
         setLoading(true);
-        fetch(`${BACKEND_API_URL}/dogs/?p=${currentPage}`)
+        fetch(`${BACKEND_API_URL}/dogs/?p=${currentPage-1}`)
         .then((response) => response.json())
         .then((data) => {
-          setDogs(data);
+          setDogs(data.results);
           setLoading(false);
         });
-        //console.log(currentPage); 
+         
       }
     };
 
@@ -138,7 +144,7 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
         {!loading && dogs.length === 0 && <p>No dogs found</p>}
         {!loading && (
           <Toolbar>
-          <IconButton onClick={handlePrevPage} style={{ marginRight:'370px'}} component={Link} sx={{ mr: 3 }} to={`/dogs/?p=${currentPage - 1}`} disabled={currentPage === 1}>
+          <IconButton onClick={handlePrevPage} style={{ marginRight:'370px'}} component={Link} sx={{ mr: 3 }} to={`/dogs/?p=${currentPage}`} disabled={currentPage === 1}>
             <Tooltip title="Previous">
              <ArrowBackIosIcon sx={{ color: "white" }} />
             </Tooltip>
@@ -152,7 +158,7 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
           onClick={orderByDateOfBirth}
           >Order ByDateOfBirth
         </Button>
-        <IconButton style={{ marginLeft:'370px'}} onClick={handleNextPage} component={Link} sx={{ mr: 3 }}  to={`/dogs/?p=${currentPage + 1}`} disabled={currentPage === totalPages}>
+        <IconButton style={{ marginLeft:'370px'}} onClick={handleNextPage} component={Link} sx={{ mr: 3 }}  to={`/dogs/?p=${currentPage }`} disabled={currentPage === totalPages}>
             <Tooltip title="Next">
              <ArrowForwardIosIcon sx={{ color: "white" }} />
             </Tooltip>
