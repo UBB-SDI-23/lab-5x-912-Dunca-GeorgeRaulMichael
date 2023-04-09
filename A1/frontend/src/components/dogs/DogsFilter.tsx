@@ -32,7 +32,10 @@ export const DogsFilter= () => {
     useEffect(() => {
     fetch(`${BACKEND_API_URL}/dogs/avg-by-toy-price?p=${currentPage}`)
         .then(res => res.json())
-        .then(data => {setDogs(data.results); setLoading(false);})
+        .then(data => {setDogs(data.results); setLoading(false);
+        
+        console.log(data.results);
+        })
     }, []);
 
     const handleNextPage = () => {
