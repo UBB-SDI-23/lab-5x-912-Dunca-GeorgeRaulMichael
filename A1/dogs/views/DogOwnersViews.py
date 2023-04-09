@@ -1,20 +1,28 @@
 from django.http import Http404
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from dogs.models import DogOwner, Owner
 from dogs.serializers import DogOwnerSerializer
 
+class MyPagination(PageNumberPagination):
+    page_size = 100
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+    page_query_param = 'p'
 
 class DogOwnersList(APIView):
 
     @extend_schema(request=None,responses=DogOwnerSerializer)
     def get(self,request):
         dogowners = DogOwner.objects.all()
-        serializer = DogOwnerSerializer(dogowners, many=True)
-        return Response(serializer.data)
+        paginator = MyPagination()
+        paginated_dogowners = paginator.paginate_queryset(dogowners, request)
+        serializer = DogOwnerSerializer(paginated_dogowners, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
     @extend_schema(request=None,responses=DogOwnerSerializer)
     def post(self,request):

@@ -10,6 +10,7 @@ import {
 	Container,
 	IconButton,
 	Tooltip,
+    Toolbar,
 } from "@mui/material";
 
 import EditIcon from "@mui/icons-material/Edit";
@@ -19,11 +20,14 @@ import { Link } from "react-router-dom";
 import AddIcon from "@mui/icons-material/Add";
 import { BACKEND_API_URL } from "../../constants";
 import { Dogs } from "../../models/Dogs";
-
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 
 export const DogsFilter= () => {
     const[loading, setLoading] = useState(true)
     const [dogs, setDogs] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const totalPages = Math.ceil(1000000 / 100);
 
     useEffect(() => {
     fetch(`${BACKEND_API_URL}/dogs/avg-by-toy-price`)
@@ -31,8 +35,20 @@ export const DogsFilter= () => {
         .then(data => {setDogs(data); setLoading(false);})
     }, []);
 
-    console.log(dogs);
-
+    //console.log(dogs);
+    const handleNextPage = () => {
+        if (currentPage < totalPages) {
+          setCurrentPage(currentPage + 1);
+          //console.log(currentPage);
+        }
+      };
+    
+      const handlePrevPage = () => {
+        if (currentPage > 1) {
+          setCurrentPage(currentPage - 1);
+          //console.log(currentPage);
+        }
+      };
     
     return (
     <Container>
@@ -41,9 +57,24 @@ export const DogsFilter= () => {
         {loading && <CircularProgress />}
 
         {!loading && dogs.length == 0 && <div>No dogs found</div>}
+        
+        {!loading && (
+        <Toolbar>
+            <IconButton onClick={handlePrevPage} style={{marginLeft:'90px', marginRight:'370px'}} component={Link} sx={{ mr: 3 }} to={`/dogs/avg-by-toy-price?p=${currentPage - 1}`} disabled={currentPage === 1}>
+              <Tooltip title="Previous">
+               <ArrowBackIosIcon sx={{ color: "white" }} />
+              </Tooltip>
+            </IconButton>
 
+            <IconButton style={{ marginLeft:'370px',marginRight:'90px'}} onClick={handleNextPage} component={Link} sx={{ mr: 3 }}  to={`/dogs/avg-by-toy-price?p=${currentPage + 1}`} disabled={currentPage === totalPages}>
+            <Tooltip title="Next">
+             <ArrowForwardIosIcon sx={{ color: "white" }} />
+            </Tooltip>
+          </IconButton>
+            </Toolbar>
+        )}
         {!loading && dogs.length > 0 && (
-
+            
             <TableContainer component={Paper}>
                 <Table sx={{ minWidth: 800 }} aria-label="simple table">
                     <TableHead>

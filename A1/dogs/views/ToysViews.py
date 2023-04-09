@@ -1,23 +1,32 @@
+from django.core.paginator import Paginator
 from django.http import Http404
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from dogs.models import Toy
 from dogs.serializers import ToySerializer, ToySerializerDetails
 
+class MyPagination(PageNumberPagination):
+    page_size = 100
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+    page_query_param = 'p'
 
 class ToysList(APIView):
     @extend_schema(request=None,responses=ToySerializer)
     def get(self,request):
-        toys = Toy.objects.all()
+        toys = Toy.objects.order_by('id')
+        paginator = MyPagination()
         price = self.request.query_params.get('price')
         if price is not None:
             toys = toys.filter(price__gt=price)
-        serializer = ToySerializer(toys, many=True)
+        paginated_toys = paginator.paginate_queryset(toys, request)
+        serializer = ToySerializer(paginated_toys, many=True)
 
-        return Response(serializer.data)
+        return paginator.get_paginated_response(serializer.data)
 
     @extend_schema(request=None,responses=ToySerializer)
     def post(self,request):

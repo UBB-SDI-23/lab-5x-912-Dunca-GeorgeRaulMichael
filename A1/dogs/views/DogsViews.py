@@ -1,7 +1,9 @@
+from django.core.paginator import Paginator
 from django.db.models import Avg, Count
 from django.http import Http404
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -9,13 +11,22 @@ from dogs.models import Dog
 from dogs.serializers import DogsSerializer, DogsSerializerDetails, DogOwnerSerializer
 
 
-class DogsList(APIView):
 
+class MyPagination(PageNumberPagination):
+    page_size = 100
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+    page_query_param = 'p'
+
+class DogsList(APIView):
+    pagination_class = MyPagination
     @extend_schema(request=None,responses=DogsSerializer)
     def get(self,request):
-        dogs = Dog.objects.all()
-        serializer = DogsSerializer(dogs, many=True)
-        return Response(serializer.data)
+        dogs = Dog.objects.order_by('id')
+        paginator=MyPagination()
+        paginated_dogs = paginator.paginate_queryset(dogs, request)
+        serializer = DogsSerializer(paginated_dogs, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
     @extend_schema(request=None,responses=DogsSerializer)
     def post(self,request):
@@ -63,9 +74,11 @@ class DogsOrderedByToyPrice(APIView):
     @extend_schema(request=None,responses=DogsSerializer)
     def get(self,request):
         dogs = Dog.objects.annotate(avg_price=Avg('toys__price')).order_by('avg_price')
-        serializer = DogsSerializer(dogs, many=True)
+        paginator = MyPagination()
+        paginated_dogs = paginator.paginate_queryset(dogs, request)
+        serializer = DogsSerializer(paginated_dogs, many=True)
 
-        return Response(serializer.data)
+        return paginator.get_paginated_response(serializer.data)
 
 class DogsOrderedByToysPossessed(APIView):
 
@@ -73,9 +86,11 @@ class DogsOrderedByToysPossessed(APIView):
     def get(self,request):
        #owners=Owner.objects.annotate(cnt=Count('dogs')-1)
         dogs=Dog.objects.annotate(nr_of_owners=Count('owners')).order_by('nr_of_owners')
-        serializer = DogsSerializer(dogs, many=True)
+        paginator = MyPagination()
+        paginated_dogs = paginator.paginate_queryset(dogs, request)
+        serializer = DogsSerializer(paginated_dogs, many=True)
 
-        return Response(serializer.data)
+        return paginator.get_paginated_response(serializer.data)
 
 class BulkAddOwnerstoDog(APIView):
 

@@ -74,12 +74,15 @@ function DogsShowAll () {
   import AddIcon from "@mui/icons-material/Add";
 import { Dogs } from "../../models/Dogs";
 import { BACKEND_API_URL } from "../../constants";
-  
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 
   export const DogsShowAll = () => {
     const [loading, setLoading] = useState(false);
     const [dogs, setDogs] = useState<Dogs[]>([]);
-  
+    const [currentPage, setCurrentPage] = useState(1);
+    const totalPages = Math.ceil(1000000 / 100);
+
     useEffect(() => {
       setLoading(true);
       fetch(`${BACKEND_API_URL}/dogs/`)
@@ -98,7 +101,20 @@ import { BACKEND_API_URL } from "../../constants";
       });
       setDogs(sorted);
     }
-    
+
+    const handleNextPage = () => {
+      if (currentPage < totalPages) {
+        setCurrentPage(currentPage + 1);
+        //console.log(currentPage);
+      }
+    };
+  
+    const handlePrevPage = () => {
+      if (currentPage > 1) {
+        setCurrentPage(currentPage - 1);
+        //console.log(currentPage);
+      }
+    };
 
     return (
       <Container>
@@ -108,6 +124,11 @@ import { BACKEND_API_URL } from "../../constants";
         {!loading && dogs.length === 0 && <p>No dogs found</p>}
         {!loading && (
           <Toolbar>
+          <IconButton onClick={handlePrevPage} style={{ marginRight:'370px'}} component={Link} sx={{ mr: 3 }} to={`/dogs/?p=${currentPage - 1}`} disabled={currentPage === 1}>
+            <Tooltip title="Previous">
+             <ArrowBackIosIcon sx={{ color: "white" }} />
+            </Tooltip>
+          </IconButton>
           <IconButton component={Link} sx={{ mr: 3 }} to={`/dogs/add`}>
             <Tooltip title="Add a new dog" arrow>
               <AddIcon color="primary" />
@@ -117,6 +138,11 @@ import { BACKEND_API_URL } from "../../constants";
           onClick={orderByDateOfBirth}
           >Order ByDateOfBirth
         </Button>
+        <IconButton style={{ marginLeft:'370px'}} onClick={handleNextPage} component={Link} sx={{ mr: 3 }}  to={`/dogs/?p=${currentPage + 1}`} disabled={currentPage === totalPages}>
+            <Tooltip title="Next">
+             <ArrowForwardIosIcon sx={{ color: "white" }} />
+            </Tooltip>
+          </IconButton>
         </Toolbar>
         )}
         {!loading && dogs.length > 0 && (
