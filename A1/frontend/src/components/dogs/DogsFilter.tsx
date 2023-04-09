@@ -30,23 +30,40 @@ export const DogsFilter= () => {
     const totalPages = Math.ceil(1000000 / 100);
 
     useEffect(() => {
-    fetch(`${BACKEND_API_URL}/dogs/avg-by-toy-price`)
+    fetch(`${BACKEND_API_URL}/dogs/avg-by-toy-price?p=${currentPage}`)
         .then(res => res.json())
-        .then(data => {setDogs(data); setLoading(false);})
+        .then(data => {setDogs(data.results); setLoading(false);})
     }, []);
 
-    //console.log(dogs);
     const handleNextPage = () => {
         if (currentPage < totalPages) {
+          
           setCurrentPage(currentPage + 1);
-          //console.log(currentPage);
+          console.log(currentPage);
+          setLoading(true);
+          fetch(`${BACKEND_API_URL}/dogs/avg-by-toy-price?p=${currentPage+1}`)
+          .then((response) => response.json())
+          .then((data) => {
+            setDogs(data.results);
+            setLoading(false);
+          });
+          
         }
       };
     
       const handlePrevPage = () => {
         if (currentPage > 1) {
+          
           setCurrentPage(currentPage - 1);
-          //console.log(currentPage);
+          console.log(currentPage);
+          setLoading(true);
+          fetch(`${BACKEND_API_URL}/dogs/avg-by-toy-price?p=${currentPage-1}`)
+          .then((response) => response.json())
+          .then((data) => {
+            setDogs(data.results);
+            setLoading(false);
+          });
+           
         }
       };
     
@@ -60,13 +77,13 @@ export const DogsFilter= () => {
         
         {!loading && (
         <Toolbar>
-            <IconButton onClick={handlePrevPage} style={{marginLeft:'90px', marginRight:'370px'}} component={Link} sx={{ mr: 3 }} to={`/dogs/avg-by-toy-price?p=${currentPage - 1}`} disabled={currentPage === 1}>
+            <IconButton onClick={handlePrevPage} style={{marginLeft:'90px', marginRight:'370px'}} component={Link} sx={{ mr: 3 }} to={`/dogs/avg-by-toy-price?p=${currentPage}`} disabled={currentPage === 1}>
               <Tooltip title="Previous">
                <ArrowBackIosIcon sx={{ color: "white" }} />
               </Tooltip>
             </IconButton>
 
-            <IconButton style={{ marginLeft:'370px',marginRight:'90px'}} onClick={handleNextPage} component={Link} sx={{ mr: 3 }}  to={`/dogs/avg-by-toy-price?p=${currentPage + 1}`} disabled={currentPage === totalPages}>
+            <IconButton style={{ marginLeft:'370px',marginRight:'90px'}} onClick={handleNextPage} component={Link} sx={{ mr: 3 }}  to={`/dogs/avg-by-toy-price?p=${currentPage}`} disabled={currentPage === totalPages}>
             <Tooltip title="Next">
              <ArrowForwardIosIcon sx={{ color: "white" }} />
             </Tooltip>
