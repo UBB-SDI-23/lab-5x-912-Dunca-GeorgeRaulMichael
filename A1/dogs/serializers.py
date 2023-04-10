@@ -23,7 +23,7 @@ class DogsSerializer(serializers.ModelSerializer):
 class ToySerializer(serializers.ModelSerializer):
     class Meta:
         model=Toy
-        fields=['id','name','dog','material','colour','price',]
+        fields=['id','name','dog','material','colour','price','descriptions']
 
     def validate_price(self, value):
         if value <= 0:
@@ -84,7 +84,7 @@ class DogsSerializerDetails(serializers.ModelSerializer):
 class ToySerializerDetails(serializers.ModelSerializer):
     class Meta:
         model=Toy
-        fields=['id','name','dog','material','colour','price',]
+        fields=['id','name','dog','material','colour','price','descriptions']
         depth=1
 
     def validate_price(self, value):

@@ -38,6 +38,21 @@ if __name__=='__main__':
         sql = f"TRUNCATE TABLE dogs_toy RESTART IDENTITY CASCADE;"
         file.write(sql + "\n")
 
+        sql = f"ALTER TABLE dogs_dogowner DROP CONSTRAINT dogs_dogowner_dog_id_2fb6aa21_fk_dogs_dog_id;"
+        file.write(sql + "\n")
+
+        sql = f"ALTER TABLE dogs_dogowner DROP CONSTRAINT dogs_dogowner_owner_id_740a195f_fk_dogs_owner_id;"
+        file.write(sql + "\n")
+
+        sql = f"ALTER TABLE dogs_dogowner DROP CONSTRAINT dogs_toy_dog_id_a028f4a6_fk_dogs_dog_id;"
+        file.write(sql + "\n")
+
+        sql = f"DROP INDEX toy_price_idx;"
+        file.write(sql + "\n")
+
+
+
+
         for i in range(0, 1000000, 1000):
             data = []
             for j in range(i, i + 1000):
@@ -58,7 +73,12 @@ if __name__=='__main__':
                 toy_colour=fake.color_name()
                 toy_price=fake.random_int(min=1,max=1000)
                 toy_dog=fake.random_int(min=1, max=1000000)
-                data.append(f"('{toy_name}', '{toy_material}', '{toy_colour}', '{toy_price}', '{toy_dog}')")
+                text = fake.text(max_nb_chars=800)
+                words = text.split(' ')
+                if len(words) > 100:
+                    words = words[:100]
+                toy_description=' '.join(words)
+                data.append(f"('{toy_name}', '{toy_material}', '{toy_colour}', '{toy_price}', '{toy_description}', '{toy_dog}')")
             sql = f"INSERT INTO dogs_toy (name, material, colour,price,dog_id) VALUES {','.join(data)};"
             file.write(sql + "\n")
 
@@ -75,10 +95,7 @@ if __name__=='__main__':
             sql = f"INSERT INTO dogs_owner (first_name, last_name, email, city, date_of_birth) VALUES {','.join(data)};"
             file.write(sql + "\n")
 
-        dog_ids = list(range(1, 1000001))
-        owners_ids = list(range(1, 1000001))
-        random.shuffle(dog_ids)
-        random.shuffle(owners_ids)
+
 
         pairs=set()
         nr=10000000
@@ -97,6 +114,14 @@ if __name__=='__main__':
             sql = f"INSERT INTO dogs_dogowner (dog_id, owner_id, adoption_date, adoption_fee) VALUES {','.join(data)};"
             file.write(sql + "\n")
 
+        sql = f"ALTER TABLE dogs_toys ADD CONSTRAINT dogs_toy_dog_id_a028f4a6_fk_dogs_dog_id FOREIGN KEY(dog_id) REFERENCES dogs_dog(id);"
+        file.write(sql + "\n")
+
+        sql = f"ALTER TABLE dogs_dogowner ADD CONSTRAINT dogs_dogowner_dog_id_2fb6aa21_fk_dogs_dog_id FOREIGN KEY(dog_id) REFERENCES dogs_dog(id);"
+        file.write(sql + "\n")
+
+        sql = f"ALTER TABLE dogs_dogowner ADD CONSTRAINT dogs_dogowner_owner_id_740a195f_fk_dogs_owner_id FOREIGN KEY(owner_id) REFERENCES dogs_owner(id);"
+        file.write(sql + "\n")
 
         sql = f"CREATE INDEX toy_price_idx ON dogs_toy(price);"
         file.write(sql + "\n")

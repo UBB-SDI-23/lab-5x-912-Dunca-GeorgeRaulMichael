@@ -19,6 +19,7 @@ class Toy(models.Model):
     colour= models.CharField(max_length=50)
     price=models.IntegerField()
     dog=models.ForeignKey(Dog,on_delete=models.CASCADE,related_name='toys')
+    descriptions=models.CharField(max_length=10000,default="Default Description")
     def __str__(self):
         return f"{self.name}"
 
