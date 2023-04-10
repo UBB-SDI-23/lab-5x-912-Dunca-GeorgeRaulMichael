@@ -79,7 +79,7 @@ if __name__=='__main__':
                     words = words[:100]
                 toy_description=' '.join(words)
                 data.append(f"('{toy_name}', '{toy_material}', '{toy_colour}', '{toy_price}', '{toy_description}', '{toy_dog}')")
-            sql = f"INSERT INTO dogs_toy (name, material, colour,price,dog_id) VALUES {','.join(data)};"
+            sql = f"INSERT INTO dogs_toy (name, material, colour,price,descriptions,dog_id) VALUES {','.join(data)};"
             file.write(sql + "\n")
 
 
