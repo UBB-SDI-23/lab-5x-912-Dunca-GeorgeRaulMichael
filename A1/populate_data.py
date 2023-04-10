@@ -93,7 +93,7 @@ if __name__=='__main__':
                 owner_last_name=fake.last_name()
                 owner_email=fake.email()
                 owner_city=fake.city()
-                owner_date_of_birth=fake.date_between(start_date='-70y', end_date='-9y')
+                owner_date_of_birth=fake.date_of_birth(minimum_age =9)
                 data.append(f"('{owner_first_name}', '{owner_last_name}', '{owner_email}', '{owner_city}', '{owner_date_of_birth}')")
             sql = f"INSERT INTO dogs_owner (first_name, last_name, email, city, date_of_birth) VALUES {','.join(data)};"
             file.write(sql + "\n")
@@ -103,21 +103,23 @@ if __name__=='__main__':
         pairs=set()
         nr=10000000
 
-        while nr>0:
+        for i in range(10000):
+            if (i % 1000 == 0):
+                print(f'Generated {i * 10000} records')
+
+            dogowner_dog=fake.random_int(min=i * 100 + 1, max=(i + 1) * 100)
             data=[]
-            for i in range(batch_size):
-                dogowner_dog= fake.random_int(min=1, max=1000000)
-                dogowner_owner = fake.random_int(min=1, max=1000000)
-                if (dogowner_dog,dogowner_owner) not in pairs:
-                    pairs.add((dogowner_dog,dogowner_owner))
-                    nr-=1
-                    dogowner_adoption_date = fake.date_between(start_date=dog_date_of_birth, end_date='today')
-                    dogowner_adoption_fee = fake.random_int(min=1,max=10000)
-                    data.append(f"('{dogowner_dog}', '{dogowner_owner}', '{dogowner_adoption_date}', '{dogowner_adoption_fee}')")
+            for j in range(1000):
+                dogowner_owner = fake.random_int(min=j * 1000 + 1, max=(j + 1) * 1000)
+
+                dogowner_adoption_date = fake.date_between(start_date=dog_date_of_birth, end_date='today')
+                dogowner_adoption_fee = fake.random_int(min=1,max=10000)
+                data.append(f"('{dogowner_dog}', '{dogowner_owner}', '{dogowner_adoption_date}', '{dogowner_adoption_fee}')")
+
             sql = f"INSERT INTO dogs_dogowner (dog_id, owner_id, adoption_date, adoption_fee) VALUES {','.join(data)};"
             file.write(sql + "\n")
 
-        sql = f"ALTER TABLE dogs_toys ADD CONSTRAINT dogs_toy_dog_id_a028f4a6_fk_dogs_dog_id FOREIGN KEY(dog_id) REFERENCES dogs_dog(id);"
+        sql = f"ALTER TABLE dogs_toy ADD CONSTRAINT dogs_toy_dog_id_a028f4a6_fk_dogs_dog_id FOREIGN KEY(dog_id) REFERENCES dogs_dog(id);"
         file.write(sql + "\n")
 
         sql = f"ALTER TABLE dogs_dogowner ADD CONSTRAINT dogs_dogowner_dog_id_2fb6aa21_fk_dogs_dog_id FOREIGN KEY(dog_id) REFERENCES dogs_dog(id);"
