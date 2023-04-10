@@ -105,7 +105,7 @@ if __name__=='__main__':
 
         for i in range(10000):
             if (i % 1000 == 0):
-                print(f'Generated {i * 10000} records')
+                print(f'{i * 1000} done')
 
             dogowner_dog=fake.random_int(min=i * 100 + 1, max=(i + 1) * 100)
             data=[]
