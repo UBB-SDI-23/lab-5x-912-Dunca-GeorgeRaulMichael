@@ -53,38 +53,38 @@ if __name__=='__main__':
 
 
 
-        # for i in range(0, 1000000, 1000):
-        #     data = []
-        #     for j in range(i, i + 1000):
-        #         dog_name = fake.first_name()
-        #         dog_breed = random.choice(dog_breeds)
-        #         dog_color = fake.color_name()
-        #         dog_is_healthy=random.choice([True, False])
-        #         dog_date_of_birth = fake.date_between(start_date='-12y', end_date='today')
-        #         data.append(f"('{dog_name}', '{dog_breed}', '{dog_color}', '{dog_is_healthy}', '{dog_date_of_birth}')")
-        #     sql = f"INSERT INTO dogs_dog (name, breed, colour,is_healthy,date_of_birth) VALUES {','.join(data)};"
-        #     file.write(sql + "\n")
-        #
-        # print("Dogs done")
-        #
-        # for i in range(0, 1000000, 1000):
-        #     data = []
-        #     for j in range(i, i + 1000):
-        #         toy_name=random.choice(toy_names)
-        #         toy_material=random.choice(toy_materials)
-        #         toy_colour=fake.color_name()
-        #         toy_price=fake.random_int(min=1,max=1000)
-        #         toy_dog=fake.random_int(min=1, max=1000000)
-        #         text = fake.text(max_nb_chars=800)
-        #         words = text.split(' ')
-        #         if len(words) > 100:
-        #             words = words[:100]
-        #         toy_description=' '.join(words)
-        #         data.append(f"('{toy_name}', '{toy_material}', '{toy_colour}', '{toy_price}', '{toy_description}', '{toy_dog}')")
-        #     sql = f"INSERT INTO dogs_toy (name, material, colour,price,descriptions,dog_id) VALUES {','.join(data)};"
-        #     file.write(sql + "\n")
+        for i in range(0, 1000000, 1000):
+            data = []
+            for j in range(i, i + 1000):
+                dog_name = fake.first_name()
+                dog_breed = random.choice(dog_breeds)
+                dog_color = fake.color_name()
+                dog_is_healthy=random.choice([True, False])
+                dog_date_of_birth = fake.date_between(start_date='-12y', end_date='today')
+                data.append(f"('{dog_name}', '{dog_breed}', '{dog_color}', '{dog_is_healthy}', '{dog_date_of_birth}')")
+            sql = f"INSERT INTO dogs_dog (name, breed, colour,is_healthy,date_of_birth) VALUES {','.join(data)};"
+            file.write(sql + "\n")
 
-       # print("Toys done")
+        print("Dogs done")
+
+        for i in range(0, 1000000, 1000):
+            data = []
+            for j in range(i, i + 1000):
+                toy_name=random.choice(toy_names)
+                toy_material=random.choice(toy_materials)
+                toy_colour=fake.color_name()
+                toy_price=fake.random_int(min=1,max=1000)
+                toy_dog=fake.random_int(min=1, max=1000000)
+                text = fake.text(max_nb_chars=800)
+                words = text.split(' ')
+                if len(words) > 100:
+                    words = words[:100]
+                toy_description=' '.join(words)
+                data.append(f"('{toy_name}', '{toy_material}', '{toy_colour}', '{toy_price}', '{toy_description}', '{toy_dog}')")
+            sql = f"INSERT INTO dogs_toy (name, material, colour,price,descriptions,dog_id) VALUES {','.join(data)};"
+            file.write(sql + "\n")
+
+        print("Toys done")
         for i in range(0, 1000000, 1000):
             data=[]
 
@@ -100,22 +100,22 @@ if __name__=='__main__':
 
         print("Owners done")
 
-        # pairs=set()
-        # nr=10000000
-        #
-        # while nr>0:
-        #     data=[]
-        #     for i in range(batch_size):
-        #         dogowner_dog= fake.random_int(min=1, max=1000000)
-        #         dogowner_owner = fake.random_int(min=1, max=1000000)
-        #         if (dogowner_dog,dogowner_owner) not in pairs:
-        #             pairs.add((dogowner_dog,dogowner_owner))
-        #             nr-=1
-        #             dogowner_adoption_date = fake.date_between(start_date=dog_date_of_birth, end_date='today')
-        #             dogowner_adoption_fee = fake.random_int(min=1,max=10000)
-        #             data.append(f"('{dogowner_dog}', '{dogowner_owner}', '{dogowner_adoption_date}', '{dogowner_adoption_fee}')")
-        #     sql = f"INSERT INTO dogs_dogowner (dog_id, owner_id, adoption_date, adoption_fee) VALUES {','.join(data)};"
-        #     file.write(sql + "\n")
+        pairs=set()
+        nr=10000000
+
+        while nr>0:
+            data=[]
+            for i in range(batch_size):
+                dogowner_dog= fake.random_int(min=1, max=1000000)
+                dogowner_owner = fake.random_int(min=1, max=1000000)
+                if (dogowner_dog,dogowner_owner) not in pairs:
+                    pairs.add((dogowner_dog,dogowner_owner))
+                    nr-=1
+                    dogowner_adoption_date = fake.date_between(start_date=dog_date_of_birth, end_date='today')
+                    dogowner_adoption_fee = fake.random_int(min=1,max=10000)
+                    data.append(f"('{dogowner_dog}', '{dogowner_owner}', '{dogowner_adoption_date}', '{dogowner_adoption_fee}')")
+            sql = f"INSERT INTO dogs_dogowner (dog_id, owner_id, adoption_date, adoption_fee) VALUES {','.join(data)};"
+            file.write(sql + "\n")
 
         sql = f"ALTER TABLE dogs_toys ADD CONSTRAINT dogs_toy_dog_id_a028f4a6_fk_dogs_dog_id FOREIGN KEY(dog_id) REFERENCES dogs_dog(id);"
         file.write(sql + "\n")
