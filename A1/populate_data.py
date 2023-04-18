@@ -44,12 +44,20 @@ if __name__=='__main__':
         sql = f"ALTER TABLE dogs_dogowner DROP CONSTRAINT dogs_dogowner_owner_id_740a195f_fk_dogs_owner_id;"
         file.write(sql + "\n")
 
-        sql = f"ALTER TABLE dogs_dogowner DROP CONSTRAINT dogs_toy_dog_id_a028f4a6_fk_dogs_dog_id;"
+        sql = f"ALTER TABLE dogs_toys DROP CONSTRAINT dogs_toy_dog_id_a028f4a6_fk_dogs_dog_id;"
         file.write(sql + "\n")
 
         sql = f"DROP INDEX toy_price_idx;"
         file.write(sql + "\n")
 
+        sql = f"DROP INDEX toy_dog_id_idx;"
+        file.write(sql + "\n")
+
+        sql = f"DROP INDEX dogowner_dog_id_idx;"
+        file.write(sql + "\n")
+
+        sql = f"DROP INDEX dogowner_owner_id_idx;"
+        file.write(sql + "\n")
 
 
 
@@ -129,4 +137,13 @@ if __name__=='__main__':
         file.write(sql + "\n")
 
         sql = f"CREATE INDEX toy_price_idx ON dogs_toy(price);"
+        file.write(sql + "\n")
+
+        sql = f"CREATE INDEX toy_dog_id_idx ON dogs_toy(dog_id);"
+        file.write(sql + "\n")
+
+        sql = f"CREATE INDEX dogowner_dog_id_idx ON dogs_dogowner(dog_id);"
+        file.write(sql + "\n")
+
+        sql = f"CREATE INDEX dogowner_owner_id_idx ON dogs_dogowner(owner_id);"
         file.write(sql + "\n")

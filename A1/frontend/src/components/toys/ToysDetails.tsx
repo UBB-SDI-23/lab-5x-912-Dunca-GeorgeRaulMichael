@@ -11,25 +11,29 @@ import { BACKEND_API_URL } from "../../constants";
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import axios from "axios";
+import { Toys } from "../../models/Toys";
 
-export const DogsDetails = () => {
-	const { dogId } = useParams();
-    const [dog, setDogs] = useState<Dogs>();
+export const ToysDetails = () => {
+	const { toyId } = useParams();
+    const [toy, setToys] = useState<Toys>();
 	const [currentPage, setCurrentPage] = useState(1);
     const totalPages = Math.ceil(1000000 / 100);
 
 	useEffect(() => {
-		const fetchDog = async () => {
+		const fetchToy = async () => {
 			try {
-                const response = await axios.get(`${BACKEND_API_URL}/dogs/${dogId}`);
-                const dog = response.data;
-                setDogs(dog);
+                const response = await axios.get(`${BACKEND_API_URL}/toys/${toyId}`);
+                const toy = response.data;
+                setToys(toy);
              } catch (error) {
                 console.log(error);
              }
 		};
-		fetchDog();
-	}, [dogId]);
+		fetchToy();
+	}, [toyId]);
+
+
+   
 
 	const handleNextPage = () => {
 		if (currentPage < totalPages) {
@@ -49,35 +53,31 @@ export const DogsDetails = () => {
 		<Container>
 			<Card>
 				<CardContent>
-					<IconButton component={Link} sx={{ mr: 3 }} to={`/dogs`}>
+					<IconButton component={Link} sx={{ mr: 3 }} to={`/toys`}>
 						<ArrowBackIcon />
 					</IconButton>{" "}
-					<h1>Dogs Details</h1>
-					<p>Dog Name: {dog?.name}</p>
-					<p>Dog Breed: {dog?.breed}</p>
-					<p>Dog Colour: {dog?.colour}</p>
-					<p>Dog IsHealthy: {dog?.is_healthy.toString()}</p>
-                    <p>Dog DateOfBirth: {dog?.date_of_birth.toString()}</p>
-                    <p>Dogs toys:</p>
+					<h1>Toy Details</h1>
+					<p>Toy Name: {toy?.name}</p>
+					<p>Toy Material: {toy?.material}</p>
+					<p>Toy Colour: {toy?.colour}</p>
+					<p>Toy Price: {toy?.price}</p>
+                    <p>Toy Description: <br/>
+                          {toy?.descriptions}</p>
+                    <p>Toy dog:</p>
 					<ul>
-						{dog?.toys?.map((toy) => (
-							<li key={toy.id}>{toy.name} {toy.colour} {toy.material} with price: {toy.price}</li>
-						))}
+						
+						<li key={toy?.dog.id}>{toy?.dog.name} {toy?.dog.breed} of colour {toy?.dog.colour} with date of birth: {toy?.dog.date_of_birth.toString()}</li>
+						
 					</ul>
-                    <p>Dog owners:</p>
-					<ul>
-						{dog?.owners?.map((dog_owner) => (
-							<li key={dog_owner.owner?.id}>{dog_owner.owner?.last_name} {dog_owner.owner?.first_name} from {dog_owner.owner?.city}</li>
-						))}
-					</ul>
+                    
 					
 				</CardContent>
 				<CardActions>
-					<IconButton component={Link} sx={{ mr: 3 }} to={`/dogs/${dogId}/edit`}>
+					<IconButton component={Link} sx={{ mr: 3 }} to={`/toys/${toyId}/edit`}>
 						<EditIcon />
 					</IconButton>
 
-					<IconButton component={Link} sx={{ mr: 3 }} to={`/dogs/${dogId}/delete`}>
+					<IconButton component={Link} sx={{ mr: 3 }} to={`/toys/${toyId}/delete`}>
 						<DeleteForeverIcon sx={{ color: "red" }} />
 					</IconButton>
 				</CardActions>

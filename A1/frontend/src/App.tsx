@@ -11,6 +11,22 @@ import { DogsAdd } from './components/dogs/DogsAdd';
 import { DogsShowAll } from './components/dogs/DogsShowAll';
 import { DogsUpdate } from './components/dogs/DogsUpdate';
 import { DogsFilter } from './components/dogs/DogsFilter';
+import { ToysShowAll } from './components/toys/ToysShowAll';
+import { ToysDetails } from './components/toys/ToysDetails';
+import { ToysAdd } from './components/toys/ToyAdd';
+import { ToysUpdate } from './components/toys/ToysUpdate';
+import { ToysDelete } from './components/toys/ToyDelete';
+import { OwnersAdd } from './components/owners/OwnerAdd';
+import { OwnersShowAll } from './components/owners/OwnersShowAll';
+import { OwnersDetails } from './components/owners/OwnersDetails';
+import { OwnersUpdate } from './components/owners/OwnersUpdate';
+import { OwnersDelete } from './components/owners/OwnersDelete';
+import { DogOwnersShowAll } from './components/dogowners/DogOwnersShowAll';
+import { DogOwnersDetails } from './components/dogowners/DogOwnersDetails';
+import { DogOwnersAdd } from './components/dogowners/DogOwnersAdd';
+import { DogOwnerUpdate } from './components/dogowners/DogOwnersUpdate';
+import { DogOwnersDelete } from './components/dogowners/DogOwnersDelete';
+import { DogsStats } from './components/dogs/DogsStats2';
 
 function App() {
   const [count, setCount] = useState(0)
@@ -47,7 +63,26 @@ function App() {
 					<Route path="/dogs/:dogId/delete" element={<DogsDelete />} />
 					<Route path="/dogs/add" element={<DogsAdd />} />
           <Route path="/dogs/avg-by-toy-price" element={<DogsFilter />} />
+          <Route path="/dogs/nr-of-owners" element={<DogsStats />} />
+          
+          <Route path="/toys" element={<ToysShowAll />} />
+          <Route path="/toys/:toyId/details" element={<ToysDetails />} />
+          <Route path="/toys/:toyId/edit" element={<ToysUpdate />} />
+          <Route path="/toys/:toyId/delete" element={<ToysDelete />} />
+          <Route path="/toys/add" element={<ToysAdd />} />
 
+
+          <Route path="/owners" element={<OwnersShowAll />} />
+          <Route path="/owners/:ownerId/details" element={<OwnersDetails />} />
+          <Route path="/owners/:ownerId/edit" element={<OwnersUpdate />} />
+          <Route path="/owners/:ownerId/delete" element={<OwnersDelete />} />
+          <Route path="/owners/add" element={<OwnersAdd />} />
+
+          <Route path="/dogowners" element={<DogOwnersShowAll />} />
+          <Route path="/dogowners/:dogId/:ownerId/details" element={<DogOwnersDetails />} />
+          <Route path="/dogowners/:dogId/:ownerId/edit" element={<DogOwnerUpdate />} />
+          <Route path="/dogowners/:dogId/:ownerId/delete" element={<DogOwnersDelete />} />
+          <Route path="/dogowners/add" element={<DogOwnersAdd />} />
 				</Routes>
       
 			</Router>

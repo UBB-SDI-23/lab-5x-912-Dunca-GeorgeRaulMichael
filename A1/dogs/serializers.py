@@ -106,3 +106,10 @@ class OwnerSerializerDetails(serializers.ModelSerializer):
             raise serializers.ValidationError(f"The date_of_birth must be lower than {max_date}.")
         return value
 
+class DogOwnersSerializerDetails(serializers.ModelSerializer):
+    dog=DogsSerializer()
+    owner=OwnerSerializer()
+    class Meta:
+        model = DogOwner
+        fields = ['dog', 'owner', 'adoption_date', 'adoption_fee']
+

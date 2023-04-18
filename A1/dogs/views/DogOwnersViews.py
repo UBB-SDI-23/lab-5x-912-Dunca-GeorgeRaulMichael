@@ -6,7 +6,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from dogs.models import DogOwner, Owner
-from dogs.serializers import DogOwnerSerializer
+from dogs.serializers import DogOwnerSerializer, DogOwnersSerializerDetails
+
 
 class MyPagination(PageNumberPagination):
     page_size = 100
@@ -39,10 +40,10 @@ class DogOwnersDetails(APIView):
         except Owner.DoesNotExist:
             raise Http404
 
-    @extend_schema(request=None,responses=DogOwnerSerializer)
+    @extend_schema(request=None,responses=DogOwnersSerializerDetails)
     def get(self,request, id_dog,id_owner):
         dogowner = self.get_object(id_dog,id_owner)
-        serializer = DogOwnerSerializer(dogowner)
+        serializer = DogOwnersSerializerDetails(dogowner)
         return Response(serializer.data)
 
     @extend_schema(request=None,responses=DogOwnerSerializer)

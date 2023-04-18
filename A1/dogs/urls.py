@@ -33,6 +33,8 @@ urlpatterns = [
     path('dogs/nr-of-owners', DogsViews.DogsOrderedByToysPossessed.as_view()),
     path('api/schema/', SpectacularAPIView.as_view(),name="schema"),
     path('api/schema/docs/',SpectacularSwaggerView.as_view(url_name="schema")),
+    path('dogs/autocomplete',DogsViews.DogsViewAutocmomplete.as_view()),
+    path('owners/autocomplete',OwnersViews.OwnersViewAutocmomplete.as_view()),
 ]
 
 

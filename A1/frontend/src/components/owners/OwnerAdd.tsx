@@ -8,25 +8,24 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import axios from "axios";
 import { Dogs } from "../../models/Dogs";
 import { BACKEND_API_URL } from "../../constants";
+import { Owners } from "../../models/Owners";
 
-export const DogsAdd = () => {
+export const OwnersAdd = () => {
 	const navigate = useNavigate();
 
-	
-	
-	const [dog, setDog] = useState<Dogs>({
-		name: "",
-		breed: "",
-		colour: "",
-        is_healthy: true,
+	const [owner, setOwner] = useState<Owners>({
+		first_name: "",
+		last_name: "",
+		email: "",
+        city:" ",
         date_of_birth: "",
 	});
 
-	const addDog = async (event: { preventDefault: () => void }) => {
+	const addOwner = async (event: { preventDefault: () => void }) => {
 		event.preventDefault();
 		try {
-			await axios.post(`${BACKEND_API_URL}/dogs/`, dog);
-			navigate("/dogs");
+			await axios.post(`${BACKEND_API_URL}/owners/`, owner);
+			navigate("/owners");
 		} catch (error) {
 			console.log(error);
 		}
@@ -36,41 +35,41 @@ export const DogsAdd = () => {
 		<Container>
 			<Card>
 				<CardContent>
-					<IconButton component={Link} sx={{ mr: 3 }} to={`/dogs`}>
+					<IconButton component={Link} sx={{ mr: 3 }} to={`/owners`}>
 						<ArrowBackIcon />
 					</IconButton>{" "}
-					<form onSubmit={addDog}>
+					<form onSubmit={addOwner}>
 						<TextField
-							id="name"
-							label="Name"
+							id="first_name"
+							label="First Name"
 							variant="outlined"
 							fullWidth
 							sx={{ mb: 2 }}
-							onChange={(event) => setDog({ ...dog, name: event.target.value })}
+							onChange={(event) => setOwner({ ...owner, first_name: event.target.value })}
 						/>
 						<TextField
-							id="breed"
-							label="Breed"
+							id="last_name"
+							label="Last Name"
 							variant="outlined"
 							fullWidth
 							sx={{ mb: 2 }}
-							onChange={(event) => setDog({ ...dog, breed: event.target.value })}
+							onChange={(event) => setOwner({ ...owner, last_name: event.target.value })}
 						/>
 						<TextField
-							id="colour"
-							label="Colour"
+							id="email"
+							label="Email"
 							variant="outlined"
 							fullWidth
 							sx={{ mb: 2 }}
-							onChange={(event) => setDog({ ...dog, colour: event.target.value })}
+							onChange={(event) => setOwner({ ...owner, email: event.target.value })}
 						/>
 						<TextField
-							id="is_healthy"
-							label="IsHealthy"
+							id="city"
+							label="City"
 							variant="outlined"
 							fullWidth
 							sx={{ mb: 2 }}
-							onChange={(event) =>setDog({...dog,is_healthy: event.target.value === "true",})}
+							onChange={(event) =>setOwner({...owner,city: event.target.value })}
 						/>
 						<TextField
 							id="date_of_birth"
@@ -78,10 +77,10 @@ export const DogsAdd = () => {
 							variant="outlined"
 							fullWidth
 							sx={{ mb: 2 }}
-							onChange={(event) => setDog({ ...dog, date_of_birth: new Date(event.target.value).toISOString().substr(0, 10) })}
+							onChange={(event) => setOwner({ ...owner, date_of_birth: new Date(event.target.value).toISOString().substr(0, 10) })}
 						/>
 
-						<Button type="submit">Add Dog</Button>
+						<Button type="submit">Add Owner</Button>
 					</form>
 				</CardContent>
 				<CardActions></CardActions>

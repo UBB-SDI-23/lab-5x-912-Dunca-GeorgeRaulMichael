@@ -53,7 +53,8 @@ class DogsDetails(APIView):
 
         return Response(serializer.data)
 
-    @extend_schema(request=None,responses=DogsSerializerDetails)
+
+    @extend_schema(request=None,responses=DogsSerializer)
     def put(self,request,id):
         dog = self.get_object(id)
         serializer = DogsSerializer(dog, data=request.data)
@@ -62,7 +63,7 @@ class DogsDetails(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    @extend_schema(request=None,responses=DogsSerializerDetails)
+    @extend_schema(request=None,responses=DogsSerializer)
     def delete(self,request,id):
         dog = self.get_object(id)
         dog.delete()
@@ -111,4 +112,15 @@ class BulkAddOwnerstoDog(APIView):
         new_owners = serializer.save()
 
         dog.owners.add(*new_owners)
+        return Response(serializer.data)
+
+
+class DogsViewAutocmomplete(APIView):
+    serializer_class=DogsSerializer
+
+    def get(self,request,*args,**kwargs):
+
+        query=request.GET.get('query')
+        dogs=Dog.objects.filter(name__icontains=query).order_by('name')[:20]
+        serializer=DogsSerializer(dogs,many=True)
         return Response(serializer.data)

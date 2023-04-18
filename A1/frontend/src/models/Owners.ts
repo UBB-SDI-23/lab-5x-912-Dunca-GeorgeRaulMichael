@@ -3,11 +3,11 @@ import { Dogs } from "./Dogs";
 
 export interface Owners
 {
-    id: number;
+    id?: number;
     first_name: string;
     last_name: string;
     email: string;
     city: string;
     date_of_birth: string;
-    dogs?: Dogs[];
+    dogs?: DogOwners[];
 }

@@ -76,12 +76,20 @@ import { Dogs } from "../../models/Dogs";
 import { BACKEND_API_URL } from "../../constants";
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import { Label } from "@mui/icons-material";
+import Dropdown from 'react-bootstrap/Dropdown';
+import DropdownButton from 'react-bootstrap/DropdownButton';
 
   export const DogsShowAll = () => {
     const [loading, setLoading] = useState(false);
     const [dogs, setDogs] = useState<Dogs[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const totalPages = Math.ceil(1000000 / 100);
+    const [Btn1, setBtn1] = useState(2);
+    const [Btn2, setBtn2] = useState(3);
+    const [Btn3, setBtn3] = useState(4);
+    const [Btn4, setBtn4] = useState(5);
+    const [BtnLast, setBtnLast] = useState(100);
 
     useEffect(() => {
       setLoading(true);
@@ -136,34 +144,90 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
       }
     };
 
+    const [open, setOpen] = React.useState(false);
+    const numbers = Array.from({length: 100}, (_, index) => index + 1);
+  const handleOpen = () => {
+    setOpen(!open);
+  };
     return (
-      <Container>
+      <Container >
         <h1>All dogs</h1>
-  
+        <label>Current Page: {currentPage}</label> 
+       
         {loading && <CircularProgress />}
         {!loading && dogs.length === 0 && <p>No dogs found</p>}
         {!loading && (
           <Toolbar>
-          <IconButton onClick={handlePrevPage} style={{ marginRight:'370px'}} component={Link} sx={{ mr: 3 }} to={`/dogs/?p=${currentPage}`} disabled={currentPage === 1}>
-            <Tooltip title="Previous">
-             <ArrowBackIosIcon sx={{ color: "white" }} />
-            </Tooltip>
-          </IconButton>
+          <div style={{ marginRight:"200px",marginLeft:"0%",width:"260px"}}>
           <IconButton component={Link} sx={{ mr: 3 }} to={`/dogs/add`}>
             <Tooltip title="Add a new dog" arrow>
               <AddIcon color="primary" />
             </Tooltip>
           </IconButton>
           <Button
+          
           onClick={orderByDateOfBirth}
           >Order ByDateOfBirth
         </Button>
-        <IconButton style={{ marginLeft:'370px'}} onClick={handleNextPage} component={Link} sx={{ mr: 3 }}  to={`/dogs/?p=${currentPage }`} disabled={currentPage === totalPages}>
+       
+        </div>
+        <p></p>
+       <div style={{width:"600px"}}>
+        <IconButton onClick={handlePrevPage} style={{marginLeft:"150px" ,marginRight:'50px'}} component={Link} sx={{ mr: 3 }} to={`/dogs/?p=${currentPage}`} disabled={currentPage === 1}>
+            <Tooltip title="Previous">
+             <ArrowBackIosIcon sx={{ color: "white" }} />
+            </Tooltip>
+          </IconButton>
+
+        
+
+        <IconButton style={{ marginLeft:'50px'}} onClick={handleNextPage} component={Link} sx={{ mr: 3 }}  to={`/dogs/?p=${currentPage }`} disabled={currentPage === totalPages}>
             <Tooltip title="Next">
              <ArrowForwardIosIcon sx={{ color: "white" }} />
             </Tooltip>
           </IconButton>
+
+          
+          {/* <Dropdown style={{margin:"0px"}}>
+      <Dropdown.Toggle variant="success" id="dropdown-basic">
+        Select a Number
+      </Dropdown.Toggle>
+
+      <Dropdown.Menu
+        style={{
+          minWidth: '200px', // Use minWidth instead of maxWidth to ensure the menu is at least 200px wide
+          width: 'auto', // Use width: auto to allow the menu to expand beyond 200px
+          overflowY: 'auto', // Add a scrollbar for vertical overflow
+          maxHeight: '300px', // Limit the maximum height of the menu to 300px
+          backgroundColor: 'white',
+        }}
+      >
+        {numbers.map((number) => (
+          <React.Fragment key={number}>
+            <Dropdown.Item eventKey={number}>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  width: '100%',
+                  height: '100%',
+                  textAlign: 'center',
+                }}
+              >
+                {number}
+              </div>
+            </Dropdown.Item>
+            {number !== 100 && <Dropdown.Divider style={{ marginLeft: '-1rem', marginRight: '-1rem' }} />}
+          </React.Fragment>
+        ))}
+      </Dropdown.Menu>
+    </Dropdown> */}
+    
+        </div>
         </Toolbar>
+
+        
         )}
         {!loading && dogs.length > 0 && (
           <TableContainer component={Paper}>
@@ -171,7 +235,7 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
               <TableHead>
                 <TableRow>
                   <TableCell>#</TableCell>
-                  <TableCell align="right">Name</TableCell>
+                  <TableCell align="left">Name</TableCell>
                   <TableCell align="right">Breed</TableCell>
                   <TableCell align="right">Colour</TableCell>
                   <TableCell align="right">IsHealthy</TableCell>
@@ -218,6 +282,9 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
             </Table>
           </TableContainer>
         )}
+
+      
       </Container>
+      
     );
   };

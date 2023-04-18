@@ -58,3 +58,15 @@ class OwnersDetails(APIView):
         owner = self.get_object(id)
         owner.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class OwnersViewAutocmomplete(APIView):
+    serializer_class=OwnerSerializer
+
+    def get(self,request,*args,**kwargs):
+
+        query=request.GET.get('query')
+        dogs=Owner.objects.filter(first_name__icontains=query).order_by('first_name')[:20]
+        serializer=OwnerSerializer(dogs,many=True)
+        return Response(serializer.data)
+
