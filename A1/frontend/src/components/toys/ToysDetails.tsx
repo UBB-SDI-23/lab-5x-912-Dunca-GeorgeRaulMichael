@@ -16,8 +16,7 @@ import { Toys } from "../../models/Toys";
 export const ToysDetails = () => {
 	const { toyId } = useParams();
     const [toy, setToys] = useState<Toys>();
-	const [currentPage, setCurrentPage] = useState(1);
-    const totalPages = Math.ceil(1000000 / 100);
+
 
 	useEffect(() => {
 		const fetchToy = async () => {
@@ -35,19 +34,7 @@ export const ToysDetails = () => {
 
    
 
-	const handleNextPage = () => {
-		if (currentPage < totalPages) {
-		  setCurrentPage(currentPage + 1);
-		  console.log(currentPage);
-		}
-	  };
-	
-	  const handlePrevPage = () => {
-		if (currentPage > 1) {
-		  setCurrentPage(currentPage - 1);
-		  console.log(currentPage);
-		}
-	  };
+
 
 	return (
 		<Container>

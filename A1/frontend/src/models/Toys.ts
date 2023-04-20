@@ -9,5 +9,6 @@ export interface Toys
     colour: string;
     price: number;
     descriptions: string;
+    nr_of_toys?: number;
     
 }

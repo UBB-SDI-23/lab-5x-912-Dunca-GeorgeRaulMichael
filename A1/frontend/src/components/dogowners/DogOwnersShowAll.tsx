@@ -123,12 +123,12 @@ import { DogOwners } from "../../models/DogOwner";
                     </TableCell>
                     <TableCell component="th" scope="row">
                       <Link to={`/dogs/${dogowner.dog}/details`} title="View dog details">
-                        {dogowner.dog}
+                        {dogowner.dog.toString()}
                       </Link>
                     </TableCell>
                     <TableCell component="th" scope="row">
                       <Link to={`/owners/${dogowner.owner}/details`} title="View owner details">
-                        {dogowner.owner}
+                        {dogowner.owner.toString()}
                       </Link>
                     </TableCell>
                     <TableCell align="right">{dogowner.adoption_date.toString()}</TableCell>

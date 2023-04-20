@@ -114,6 +114,7 @@ import { Owners } from "../../models/Owners";
                   <TableCell align="center">Email</TableCell>
                   <TableCell align="right">City</TableCell>
                   <TableCell align="right">DateOfBirth</TableCell>
+                  <TableCell align="right">NrOfDogs</TableCell>
                   <TableCell align="center">Operations</TableCell>
                 </TableRow>
               </TableHead>
@@ -132,6 +133,7 @@ import { Owners } from "../../models/Owners";
                     <TableCell align="right">{owner.email}</TableCell>
                     <TableCell align="right">{owner.city}</TableCell>
                     <TableCell align="right">{owner.date_of_birth.toString()}</TableCell>
+                    <TableCell align="right">{owner.nr_of_dogs}</TableCell>
                     <TableCell align="right">
                       <IconButton
                         component={Link}

@@ -72,6 +72,29 @@ export const ToysAdd = () => {
             debouncedFetchSuggestions(value);
         }
     }
+
+	const [priceError, setPriceError] = useState('');
+	function handlePriceChange(event:any) {
+		const input = event.target.value;
+		const regex = /^-?[0-9\b]+$/;
+		if (regex.test(input)) {
+	
+		const value = parseInt(event.target.value);
+		
+		if (value <= 0) {
+		  setPriceError('Price must be greater than zero!');
+		  setToy({ ...toy, price: value });
+		} else {
+		  setPriceError('');
+		  setToy({ ...toy, price: value });
+		}
+	}
+	else
+	{
+		setPriceError('Price must be a number!')
+		setToy({ ...toy, price: input });
+	}
+	  }
 	return (
 		<Container>
 			<Card>
@@ -100,11 +123,12 @@ export const ToysAdd = () => {
                             onChange={(event,value)=>
                             {
 
-                                
+                                console.log("VALUE"
+								,value);
                                 if (value)
                                 {
                                     console.log(value);
-                                    setToy({...toy, dog: value.id})
+                                    setToy({...toy, dog: value.id! as any as Dogs})
                                 }
                             }}
                         />
@@ -130,7 +154,9 @@ export const ToysAdd = () => {
 							variant="outlined"
 							fullWidth
 							sx={{ mb: 2 }}
-							onChange={(event) => setToy({ ...toy, price: parseInt(event.target.value) })}
+							onChange={handlePriceChange}
+        					error={!!priceError}
+        					helperText={priceError}
 						/>
                         <TextField
 							id="descriptions"

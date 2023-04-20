@@ -37,7 +37,8 @@ useEffect(() => {
          const response = await fetch(`${BACKEND_API_URL}/toys/${toyId}`);
          const toy = await response.json();
          setToy(toy);
-         console.log(toy);
+         setToy({...toy, dog: toy.dog.id as any as Dogs})
+         console.log(toy.dog);
       } catch (error) {
          console.log(error);
       }
@@ -64,6 +65,7 @@ const [dogs,setDogs]=useState<Dogs[]>([]);
             );
             const data= await response.data;
             setDogs(data);
+            console.log(data);
         } catch (error) {
             console.log("Error fetching suggestions",error);
             
@@ -81,13 +83,38 @@ const [dogs,setDogs]=useState<Dogs[]>([]);
 
     const handleInputChange=(event:any,value:any,reason:any)=>
     {
-        console.log("input",value,reason);
+        
         if (reason=="input")
         {
             
             debouncedFetchSuggestions(value);
         }
     }
+
+    const [priceError, setPriceError] = useState('');
+	function handlePriceChange(event:any) {
+		const input = event.target.value;
+		const regex = /^-?[0-9\b]+$/;
+        
+		if (regex.test(input)) {
+        const value = parseInt(input);
+		//const value = parseInt(event.target.value);
+		
+		if (value <= 0) {
+		  setPriceError('Price must be greater than zero');
+          setToy({ ...toy, price: value });
+          
+		} else {
+		  setPriceError('');
+		  setToy({ ...toy, price: value });
+		}
+	}
+    else
+	{
+		setPriceError('Price must be a number!')
+		setToy({ ...toy, price: input });
+	}
+	  }
    return (
       <Container>
          <Card>
@@ -108,26 +135,35 @@ const [dogs,setDogs]=useState<Dogs[]>([]);
 			<Autocomplete
                
                 sx={{ mb: 2 }}
-                
                 id="dog"
-                options={dogs}       
-                getOptionLabel={(option)=> `${option.name} - ${option.breed} - ${option.colour}`}
+                options={dogs}    
+                
+                value={toy.dog}
+                //defaultValue={toy.dog.id as any as Dogs}   
+                //getOptionLabel={(option)=> option.name+" - "+option.breed+" - "+option.colour}
+                getOptionLabel={(option) => {
+                    if (option.hasOwnProperty('name')) {
+                      return option.name+" - "+option.breed+" - "+option.colour;
+                    }
+                    return option.toString();
+                  }}
                 renderInput={(params)=> <TextField {...params} label="Dog" />}
                 filterOptions={(x)=>x}
                 onInputChange={handleInputChange}
                 onChange={(event,value)=>
-                {
-
-                                
+                {              
                     if (value)
                     {
                         
-                        console.log("VALUE:",value);
-                        setToy({...toy, dog: value.id})
-                        console.log(toy.dog);
+                        
+                        setToy({...toy, dog: value.id! as any as Dogs})
+                        
                     }
+                    
                 }}
                 />
+
+                
 				<TextField
 				    id="material"
 					label="Material"
@@ -153,7 +189,9 @@ const [dogs,setDogs]=useState<Dogs[]>([]);
 					fullWidth
 					sx={{ mb: 2 }}
                     value={toy.price}
-					onChange={(event) => setToy({ ...toy, price: parseInt(event.target.value) })}
+					onChange={handlePriceChange}
+                    error={!!priceError}
+        			helperText={priceError}
 				/>
                 <TextField
 					id="descriptions"

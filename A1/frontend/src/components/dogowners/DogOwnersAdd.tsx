@@ -144,7 +144,7 @@ export const DogOwnersAdd = () => {
                                 if (value)
                                 {
                                     console.log(value);
-                                    setDogOwner({...dogowner, dog: value.id})
+                                    setDogOwner({...dogowner, dog: value.id! as any as Dogs})
                                 }
                             }}
                         />
@@ -166,7 +166,7 @@ export const DogOwnersAdd = () => {
                                 if (value)
                                 {
                                     console.log(value);
-                                    setDogOwner({...dogowner, owner: value.id})
+                                    setDogOwner({...dogowner, owner: value.id! as any as Owners})
                                 }
                             }}
                         />

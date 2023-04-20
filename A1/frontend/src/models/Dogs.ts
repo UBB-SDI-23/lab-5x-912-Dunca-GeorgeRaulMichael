@@ -12,5 +12,6 @@ export interface Dogs{
     toys?: Toys[];
     owners?: DogOwners[];
     avg_price?:number;
+    nr_of_owners?: number;
 
 }

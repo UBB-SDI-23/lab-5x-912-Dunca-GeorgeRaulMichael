@@ -93,7 +93,7 @@ import DropdownButton from 'react-bootstrap/DropdownButton';
 
     useEffect(() => {
       setLoading(true);
-      console.log(currentPage);
+      
       fetch(`${BACKEND_API_URL}/dogs/?p=${currentPage}`)
         .then((response) => response.json())
         .then((data) => {
@@ -116,7 +116,7 @@ import DropdownButton from 'react-bootstrap/DropdownButton';
       if (currentPage < totalPages) {
         
         setCurrentPage(currentPage + 1);
-        console.log(currentPage);
+        
         setLoading(true);
         fetch(`${BACKEND_API_URL}/dogs/?p=${currentPage+1}`)
         .then((response) => response.json())
@@ -132,12 +132,13 @@ import DropdownButton from 'react-bootstrap/DropdownButton';
       if (currentPage > 1) {
         
         setCurrentPage(currentPage - 1);
-        console.log(currentPage);
+        //console.log(currentPage);
         setLoading(true);
         fetch(`${BACKEND_API_URL}/dogs/?p=${currentPage-1}`)
         .then((response) => response.json())
         .then((data) => {
           setDogs(data.results);
+          
           setLoading(false);
         });
          
@@ -240,6 +241,7 @@ import DropdownButton from 'react-bootstrap/DropdownButton';
                   <TableCell align="right">Colour</TableCell>
                   <TableCell align="right">IsHealthy</TableCell>
                   <TableCell align="right">DateOfBirth</TableCell>
+                  <TableCell align="right">NrOfOwners</TableCell>
                   <TableCell align="center">Operations</TableCell>
                 </TableRow>
               </TableHead>
@@ -257,7 +259,8 @@ import DropdownButton from 'react-bootstrap/DropdownButton';
                     <TableCell align="right">{dog.breed}</TableCell>
                     <TableCell align="right">{dog.colour}</TableCell>
                     <TableCell align="right">{dog.is_healthy.toString()}</TableCell>
-                    <TableCell align="right">{dog.date_of_birth.toString()}</TableCell>
+                    <TableCell align="right">{dog.date_of_birth}</TableCell>
+                    <TableCell align="right">{dog.nr_of_owners}</TableCell>
                     <TableCell align="right">
                       <IconButton
                         component={Link}

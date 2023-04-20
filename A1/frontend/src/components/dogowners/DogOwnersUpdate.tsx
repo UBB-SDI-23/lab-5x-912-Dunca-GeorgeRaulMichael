@@ -19,7 +19,7 @@ const { dogId,ownerId } = useParams();
 const myDog: Dogs = {
     name: "Spike",
     breed: "Labrador",
-    colour: "Golde",
+    colour: "Gold",
     is_healthy: true,
     date_of_birth: "2020-05-05",
   };
@@ -46,7 +46,13 @@ useEffect(() => {
          const response = await fetch(`${BACKEND_API_URL}/dogowners/${dogId}/${ownerId}`);
          const dogowner = await response.json();
          setDogOwner(dogowner);
-         console.log(dogowner);
+         setDogOwner({
+            ...dogowner,
+            dog: dogId as any as Dogs,
+            owner: ownerId as any as Owners,
+          });
+         console.log("BAA",dogowner.dog);
+         console.log("Owner",dogowner.owner);
       } catch (error) {
          console.log(error);
       }
@@ -72,6 +78,7 @@ const [dogs,setDogs]=useState<Dogs[]>([]);
                 `${BACKEND_API_URL}/dogs/autocomplete?query=${query}`
             );
             const data= await response.data;
+            
             setDogs(data);
         } catch (error) {
             console.log("Error fetching suggestions",error);
@@ -108,7 +115,7 @@ const [dogs,setDogs]=useState<Dogs[]>([]);
 
     const handleInputChangedog=(event:any,value:any,reason:any)=>
     {
-        console.log("input",value,reason);
+        
         if (reason=="input")
         {
             
@@ -128,7 +135,7 @@ const [dogs,setDogs]=useState<Dogs[]>([]);
 
     const handleInputChangeowner=(event:any,value:any,reason:any)=>
     {
-        console.log("input",value,reason);
+        
         if (reason=="input")
         {
             
@@ -147,8 +154,14 @@ const [dogs,setDogs]=useState<Dogs[]>([]);
                 sx={{ mb: 2 }}
                 id="dog"
                 options={dogs}
-               // value={dogowner.dog}
-                getOptionLabel={(option)=> `${option.name} - ${option.breed} - ${option.colour}`}
+               value={dogowner.dog}
+               getOptionLabel={(option) => {
+                
+                if (option.hasOwnProperty('name')) {
+                  return option.name+" - "+option.breed+" - "+option.colour;
+                }
+                return option.toString();
+              }}
                 renderInput={(params)=> <TextField {...params} label="Dog" />}
                 filterOptions={(x)=>x}
                 onInputChange={handleInputChangedog}
@@ -158,8 +171,8 @@ const [dogs,setDogs]=useState<Dogs[]>([]);
                                 
                     if (value)
                     {
-                        console.log(value);
-                        setDogOwner({...dogowner, dog: value.id})
+                        
+                        setDogOwner({...dogowner, dog: value.id! as any as Dogs});
                     }
                 }}
             />
@@ -169,8 +182,14 @@ const [dogs,setDogs]=useState<Dogs[]>([]);
                 sx={{ mb: 2 }}
                 id="owner"
                 options={owners}
-                //value={dogowner.owner}
-                getOptionLabel={(option)=> `${option.first_name} - ${option.last_name} - ${option.email}`}
+                value={dogowner.owner}
+                //getOptionLabel={(option)=> `${option.first_name} - ${option.last_name} - ${option.email}`}
+                getOptionLabel={(option) => {
+                    if (option.hasOwnProperty('first_name')) {
+                      return option.first_name+" - "+option.last_name+" - "+option.email;
+                    }
+                    return option.toString();
+                  }}
                 renderInput={(params)=> <TextField {...params} label="Owner" />}
                 filterOptions={(x)=>x}
                 onInputChange={handleInputChangeowner}
@@ -180,8 +199,8 @@ const [dogs,setDogs]=useState<Dogs[]>([]);
                                 
                     if (value)
                     {
-                        console.log(value);
-                        setDogOwner({...dogowner, owner: value.id})
+                        
+                        setDogOwner({...dogowner, owner: value.id! as any as Owners})
                     }
                 }}
             />

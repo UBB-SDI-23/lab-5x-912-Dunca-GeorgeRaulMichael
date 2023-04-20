@@ -42,11 +42,11 @@ import { Label } from "@mui/icons-material";
 
     useEffect(() => {
       setLoading(true);
-      console.log(currentPage);
+      
       fetch(`${BACKEND_API_URL}/toys/?p=${currentPage}&price=${InputValue}`)
         .then((response) => response.json())
         .then((data) => {
-         console.log(data.results[0]);
+         
           setToys(data.results);
           setNextPage(data.next);
           setPrevPage(data.previous);
@@ -59,7 +59,7 @@ import { Label } from "@mui/icons-material";
       if (NextPage) {
         
         setCurrentPage(currentPage + 1);
-        console.log(NextPage);
+        
         setLoading(true);
         fetch(`${NextPage}`)
         .then((response) => response.json())
@@ -78,7 +78,7 @@ import { Label } from "@mui/icons-material";
       if (PrevPage) {
         
         setCurrentPage(currentPage - 1);
-        console.log(currentPage);
+        
         setLoading(true);
         fetch(`${PrevPage}`)
         .then((response) => response.json())
@@ -98,16 +98,14 @@ import { Label } from "@mui/icons-material";
       // navigate("/books");
       setLoading(true);
       setCurrentPage(1);
-      console.log(currentPage);
-      console.log("initval",InputValue);
+      
           fetch(`${BACKEND_API_URL}/toys/?p=1&price=${InputValue}`)
         .then((response) => response.json())
         .then((data) => {
           setToys(data.results);
           setNextPage(data.next);
           setPrevPage(data.previous);
-          console.log(data.previous);
-          console.log(data.results);
+          
           setLoading(false);
         });
     };
@@ -154,12 +152,13 @@ import { Label } from "@mui/icons-material";
               <TableHead>
                 <TableRow>
                   <TableCell>#</TableCell>
-                  <TableCell align="right">Name</TableCell>
-                  <TableCell align="right">Dog</TableCell>
-                  <TableCell align="right">Material</TableCell>
-                  <TableCell align="right">Colour</TableCell>
-                  <TableCell align="right">Price</TableCell>
+                  <TableCell align="center">Name</TableCell>
+                  <TableCell align="center">Dog</TableCell>
+                  <TableCell align="center">Material</TableCell>
+                  <TableCell align="center">Colour</TableCell>
+                  <TableCell align="center">Price</TableCell>
                   <TableCell align="center">Description</TableCell>
+                  <TableCell align="center">NrOtherToys</TableCell>
                   <TableCell align="center">Operations</TableCell>
                 </TableRow>
               </TableHead>
@@ -174,12 +173,13 @@ import { Label } from "@mui/icons-material";
                         {toy.name}
                       </Link>
                     </TableCell>
-                    <TableCell align="right">{toy.dog.toString()}</TableCell>
-                    <TableCell align="right">{toy.material}</TableCell>
-                    <TableCell align="right">{toy.colour}</TableCell>
-                    <TableCell align="right">{toy.price}</TableCell>
-                    <TableCell align="right">{toy.descriptions}</TableCell>
-                    <TableCell align="right">
+                    <TableCell align="center">{toy.dog.toString()}</TableCell>
+                    <TableCell align="center">{toy.material}</TableCell>
+                    <TableCell align="center">{toy.colour}</TableCell>
+                    <TableCell align="center">{toy.price}</TableCell>
+                    <TableCell align="center">{toy.descriptions}</TableCell>
+                    <TableCell align="center">{toy.nr_of_toys}</TableCell>
+                    <TableCell align="center">
                       <IconButton
                         component={Link}
                         sx={{ mr: 3 }}

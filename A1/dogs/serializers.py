@@ -1,4 +1,6 @@
+import re
 from datetime import date
+
 
 from rest_framework import serializers
 from .models import Dog, Owner, DogOwner
@@ -17,13 +19,19 @@ class DogsSerializer(serializers.ModelSerializer):
     def validate_date_of_birth(self, value):
         min_date = date(2010, 1, 1)
         if value < min_date:
-            raise serializers.ValidationError(f"The date_of_birth must be higher than {min_date}.")
+            raise serializers.ValidationError(f"The date_of_birth must be higher than {min_date}!")
+        return value
+    def validate_name(self, value):
+
+        if len(value)<=2:
+            raise serializers.ValidationError(f"The name must have at least 3 characters!")
         return value
 
 class ToySerializer(serializers.ModelSerializer):
+    nr_of_toys = serializers.IntegerField(read_only=True)
     class Meta:
         model=Toy
-        fields=['id','name','dog','material','colour','price','descriptions']
+        fields=['id','name','dog','material','colour','price','descriptions','nr_of_toys']
 
     def validate_price(self, value):
         if value <= 0:
@@ -31,14 +39,25 @@ class ToySerializer(serializers.ModelSerializer):
         return value
 
 class OwnerSerializer(serializers.ModelSerializer):
+    nr_of_dogs = serializers.IntegerField(read_only=True)
     class Meta:
         model=Owner
-        fields=['id','first_name','last_name','email','city','date_of_birth']
+        fields=['id','first_name','last_name','email','city','date_of_birth','nr_of_dogs']
 
     def validate_date_of_birth(self, value):
         max_date = date(2016, 1, 1)
         if value > max_date:
             raise serializers.ValidationError(f"The date_of_birth must be lower than {max_date}.")
+        return value
+
+    def validate_email(self, value):
+        # Define the regular expression pattern
+        pattern = r"^.+@.+\..+$"
+
+
+        # Use the re module to check if the string matches the pattern
+        if not re.match(pattern, value):
+            raise serializers.ValidationError(f"The email must be a valid one!")
         return value
 
 class DogOwnerSerializer(serializers.ModelSerializer):
@@ -80,6 +99,11 @@ class DogsSerializerDetails(serializers.ModelSerializer):
             raise serializers.ValidationError(f"The date_of_birth must be higher than {min_date}.")
         return value
 
+    def validate_name(self, value):
+
+        if len(value)<=2:
+            raise serializers.ValidationError(f"The name must have at least 3 characters!")
+        return value
 
 class ToySerializerDetails(serializers.ModelSerializer):
     class Meta:
@@ -104,6 +128,15 @@ class OwnerSerializerDetails(serializers.ModelSerializer):
         max_date = date(2016, 1, 1)
         if value > max_date:
             raise serializers.ValidationError(f"The date_of_birth must be lower than {max_date}.")
+        return value
+
+    def validate_email(self, value):
+        # Define the regular expression pattern
+        pattern = r"^.+@.+\..+$"
+
+        # Use the re module to check if the string matches the pattern
+        if not re.match(pattern, value):
+            raise serializers.ValidationError(f"The email must be a valid one!")
         return value
 
 class DogOwnersSerializerDetails(serializers.ModelSerializer):

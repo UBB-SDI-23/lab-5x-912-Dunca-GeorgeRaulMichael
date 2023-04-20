@@ -142,8 +142,9 @@ if __name__=='__main__':
         sql = f"CREATE INDEX toy_dog_id_idx ON dogs_toy(dog_id);"
         file.write(sql + "\n")
 
+        sql = f"CREATE INDEX dogowner_owner_id_idx ON dogs_dogowner(owner_id);"
+        file.write(sql + "\n")
+
         sql = f"CREATE INDEX dogowner_dog_id_idx ON dogs_dogowner(dog_id);"
         file.write(sql + "\n")
 
-        sql = f"CREATE INDEX dogowner_owner_id_idx ON dogs_dogowner(owner_id);"
-        file.write(sql + "\n")

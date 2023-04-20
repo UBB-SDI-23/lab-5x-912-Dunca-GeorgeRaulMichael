@@ -31,8 +31,11 @@ export const DogsFilter= () => {
 
     useEffect(() => {
     fetch(`${BACKEND_API_URL}/dogs/avg-by-toy-price?p=${currentPage}`)
-        .then(res => res.json())
-        .then(data => {setDogs(data.results); setLoading(false);
+      .then((response) => response.json())
+      .then((data) => {
+        setDogs(data.results);
+        console.log(data.results);
+        setLoading(false);
         
         
         })
@@ -64,6 +67,7 @@ export const DogsFilter= () => {
           .then((response) => response.json())
           .then((data) => {
             setDogs(data.results);
+            
             setLoading(false);
           });
            
@@ -73,7 +77,7 @@ export const DogsFilter= () => {
     return (
     <Container>
         <h1 style={{marginTop:"65px"}}>All Dogs Ordered By The Avg price of their toys</h1>
-
+        <label>Current Page: {currentPage}</label> 
         {loading && <CircularProgress />}
 
         {!loading && dogs.length == 0 && <div>No dogs found</div>}

@@ -31,19 +31,7 @@ export const DogsDetails = () => {
 		fetchDog();
 	}, [dogId]);
 
-	const handleNextPage = () => {
-		if (currentPage < totalPages) {
-		  setCurrentPage(currentPage + 1);
-		  console.log(currentPage);
-		}
-	  };
-	
-	  const handlePrevPage = () => {
-		if (currentPage > 1) {
-		  setCurrentPage(currentPage - 1);
-		  console.log(currentPage);
-		}
-	  };
+
 
 	return (
 		<Container>

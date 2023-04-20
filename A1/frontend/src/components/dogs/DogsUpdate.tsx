@@ -46,8 +46,44 @@ const updateDog = async (event: { preventDefault: () => void }) => {
    }
 };
 
+const [DateError, setDateError] = useState('');
+	function handleDateChange(event:any) {
+		const input = event.target.value;
+		const regex= /^\d{4}-\d{1,2}-\d{1,2}$/;
+		const min_date="2010-01-01"
+      if (regex.test(input))
+		{
+         if (input <min_date) {
+      
+         setDateError('Date must be greater than '+ min_date);
+         setDog({ ...dog, date_of_birth: input });
+         } else {
+         setDateError('');
+         setDog({ ...dog, date_of_birth: input });
+         }
+      }
+		else
+		{
+			setDateError('Invalid date!');
+         setDog({ ...dog, date_of_birth: input });
+		}
+	}
+
+   const [NameError, setNameError] = useState('');
+	function handleNameChange(event:any) {
+		const input = event.target.value;
+		if (input.length<=2)
+		{	
+			
+         setNameError('Name must have at least 3 charachters!');
+         setDog({ ...dog, name: input });
+		} else {
+         setNameError('');
+		  setDog({ ...dog, name: input });
+		}
+	}
+
    return (
-      <div style={{ marginTop:'200px'}}>
       <Container>
          <Card>
          <CardContent>
@@ -62,7 +98,9 @@ const updateDog = async (event: { preventDefault: () => void }) => {
                fullWidth
                sx={{ mb: 2 }}
                value={dog.name}
-               onChange={(event) => setDog({ ...dog, name: event.target.value })}
+               onChange={handleNameChange}
+        			error={!!NameError}
+        			helperText={NameError}
             />
             <TextField
               id="breed"
@@ -92,20 +130,22 @@ const updateDog = async (event: { preventDefault: () => void }) => {
                onChange={(event) =>setDog({...dog,is_healthy: event.target.value === "true",})}
             />
             <TextField
-              id="date_of_birth"
-              label="DateOfBirth"
-              variant="outlined"
-              fullWidth
-              sx={{ mb: 2 }}
+					id="date_of_birth"
+					label="DateOfBirth"
+					variant="outlined"
+					fullWidth
+					sx={{ mb: 2 }}
                value={dog.date_of_birth}
-               onChange={(event) => setDog({ ...dog, date_of_birth: new Date(event.target.value).toISOString().substr(0, 10) })}
-            />
+					onChange={handleDateChange}
+        			error={!!DateError}
+        			helperText={DateError}
+				/>
             <Button type="submit">Update</Button>
             </form>
    </CardContent>
 				<CardActions></CardActions>
 			</Card>
 		</Container>
-      </div>
+      
 	);
 };

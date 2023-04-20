@@ -31,18 +31,19 @@ export const DogsStats= () => {
 
     useEffect(() => {
     fetch(`${BACKEND_API_URL}/dogs/nr-of-owners?p=${currentPage}`)
-        .then(res => res.json())
-        .then(data => {setDogs(data.results); setLoading(false);
-        
-        
-        })
+      .then((response) => response.json())
+      .then((data) => {
+        setDogs(data.results);
+      
+        setLoading(false);
+    });
     }, []);
 
     const handleNextPage = () => {
         if (currentPage < totalPages) {
           
           setCurrentPage(currentPage + 1);
-          console.log(currentPage);
+          
           setLoading(true);
           fetch(`${BACKEND_API_URL}/dogs/nr-of-owners?p=${currentPage+1}`)
           .then((response) => response.json())
@@ -58,7 +59,7 @@ export const DogsStats= () => {
         if (currentPage > 1) {
           
           setCurrentPage(currentPage - 1);
-          console.log(currentPage);
+          
           setLoading(true);
           fetch(`${BACKEND_API_URL}/dogs/nr-of-owners?p=${currentPage-1}`)
           .then((response) => response.json())
@@ -73,7 +74,7 @@ export const DogsStats= () => {
     return (
     <Container>
         <h1 style={{marginTop:"65px"}}>All Dogs Ordered By The nr of Owners they have </h1>
-
+        <label>Current Page: {currentPage}</label> 
         {loading && <CircularProgress />}
 
         {!loading && dogs.length == 0 && <div>No dogs found</div>}
@@ -100,12 +101,12 @@ export const DogsStats= () => {
                     <TableHead>
                         <TableRow>
                             <TableCell>#</TableCell>
-                            <TableCell align="center" style={{color:"#2471A3", fontWeight:'bold'}}>Name</TableCell>
-                            <TableCell align="center" style={{color:"#2471A3", fontWeight:'bold'}}>Breed</TableCell>
-                            <TableCell align="center" style={{color:"#2471A3", fontWeight:'bold'}}>Colour</TableCell>
-                            <TableCell align="center" style={{color:"#2471A3", fontWeight:'bold'}}>IsHealthy</TableCell>
-                            <TableCell align="center" style={{color:"#2471A3", fontWeight:'bold'}}>DateOfBirth</TableCell>
-                            <TableCell align="center" style={{color:"#2471A3", fontWeight:'bold'}}>Nr of Owners</TableCell>
+                            <TableCell align="center" >Name</TableCell>
+                            <TableCell align="center" >Breed</TableCell>
+                            <TableCell align="center" >Colour</TableCell>
+                            <TableCell align="center" >IsHealthy</TableCell>
+                            <TableCell align="center" >DateOfBirth</TableCell>
+                            <TableCell align="center" >Nr of Owners</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>

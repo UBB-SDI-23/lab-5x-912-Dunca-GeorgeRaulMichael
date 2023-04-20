@@ -22,7 +22,7 @@ class DogsList(APIView):
     pagination_class = MyPagination
     @extend_schema(request=None,responses=DogsSerializer)
     def get(self,request):
-        dogs = Dog.objects.order_by('id')
+        dogs = Dog.objects.annotate(nr_of_owners=Count('owners')).order_by('id')
         paginator=MyPagination()
         paginated_dogs = paginator.paginate_queryset(dogs, request)
         serializer = DogsSerializer(paginated_dogs, many=True)
@@ -118,9 +118,13 @@ class BulkAddOwnerstoDog(APIView):
 class DogsViewAutocmomplete(APIView):
     serializer_class=DogsSerializer
 
-    def get(self,request,*args,**kwargs):
+    @extend_schema(request=None, responses=DogsSerializer)
+    def get(self,request):
 
-        query=request.GET.get('query')
-        dogs=Dog.objects.filter(name__icontains=query).order_by('name')[:20]
+        query=request.query_params.get('query',None)
+        if query:
+            dogs=Dog.objects.filter(name__icontains=query).order_by('name')[:20]
+        else:
+            dogs=Dog.objects.all()[:20]
         serializer=DogsSerializer(dogs,many=True)
         return Response(serializer.data)

@@ -47,6 +47,48 @@ const updateOwner = async (event: { preventDefault: () => void }) => {
    }
 };
 
+
+const [DateError, setDateError] = useState('');
+	function handleDateChange(event:any) {
+		const input = event.target.value;
+		const regex= /^\d{4}-\d{1,2}-\d{1,2}$/;
+		const max_date="2016-01-01"
+		if (regex.test(input))
+		{	
+			if (input >max_date) {
+	
+        setDateError('Date must be smaller than '+max_date);
+        setOwner({ ...owner, date_of_birth: input });
+		} else {
+		  setDateError('');
+		  setOwner({ ...owner, date_of_birth: input });
+		}
+	}
+		else
+		{
+			setDateError('Invalid date!');
+         setOwner({ ...owner, date_of_birth: input });
+		}
+	}
+
+	
+	const [EmailError, setEmailError] = useState('');
+	function handleEmailChange(event:any) {
+		const input = event.target.value;
+		const regex= /^.+@.+\..+$/;
+      
+		if (! regex.test(input))
+		{	
+			
+			setEmailError('Invalid email !');
+			setOwner({ ...owner, email: input });
+		} else {
+        
+			setEmailError('');
+		  setOwner({ ...owner, email: input });
+		}
+	}
+
    return (
       <Container>
          <Card>
@@ -80,7 +122,9 @@ const updateOwner = async (event: { preventDefault: () => void }) => {
               fullWidth
               sx={{ mb: 2 }}
               value={owner.email}
-              onChange={(event) => setOwner({ ...owner, email: event.target.value })}
+              onChange={handleEmailChange}
+        			error={!!EmailError}
+        			helperText={EmailError}
             />
             <TextField
               id="city"
@@ -97,8 +141,10 @@ const updateOwner = async (event: { preventDefault: () => void }) => {
               variant="outlined"
               fullWidth
               sx={{ mb: 2 }}
-               value={owner.date_of_birth}
-               onChange={(event) => setOwner({ ...owner, date_of_birth: new Date(event.target.value).toISOString().substr(0, 10) })}
+              value={owner.date_of_birth}
+              onChange={handleDateChange}
+        		  error={!!DateError}
+        		  helperText={DateError}
             />
             <Button type="submit">Update</Button>
             </form>

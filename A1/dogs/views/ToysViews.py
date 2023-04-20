@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
+from django.db.models import Avg, Count
 from dogs.models import Toy
 from dogs.serializers import ToySerializer, ToySerializerDetails
 
@@ -18,7 +18,8 @@ class MyPagination(PageNumberPagination):
 class ToysList(APIView):
     @extend_schema(request=None,responses=ToySerializer)
     def get(self,request):
-        toys = Toy.objects.order_by('id')
+
+        toys = Toy.objects.select_related('dog').prefetch_related('dog__toys').annotate(nr_of_toys=Count('dog__toys')-1).order_by('id')
         paginator = MyPagination()
         price = self.request.query_params.get('price')
         if price is not None:
@@ -27,6 +28,8 @@ class ToysList(APIView):
         serializer = ToySerializer(paginated_toys, many=True)
 
         return paginator.get_paginated_response(serializer.data)
+
+
 
     @extend_schema(request=None,responses=ToySerializer)
     def post(self,request):

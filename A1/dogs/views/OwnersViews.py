@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
+from django.db.models import Avg, Count
 from dogs.models import Owner
 from dogs.serializers import OwnerSerializer, OwnerSerializerDetails
 
@@ -17,7 +17,7 @@ class MyPagination(PageNumberPagination):
 class OwnersList(APIView):
     @extend_schema(request=None,responses=OwnerSerializer)
     def get(self,request):
-        owners = Owner.objects.order_by('id')
+        owners = Owner.objects.annotate(nr_of_dogs=Count('dogs')).order_by('id')
         paginator = MyPagination()
         paginated_owners = paginator.paginate_queryset(owners, request)
         serializer = OwnerSerializer(paginated_owners, many=True)
