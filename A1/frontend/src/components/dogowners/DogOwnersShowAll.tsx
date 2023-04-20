@@ -30,7 +30,7 @@ import { DogOwners } from "../../models/DogOwner";
     const [loading, setLoading] = useState(false);
     const [dogowners, setDogOwners] = useState<DogOwners[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
-    const totalPages = Math.ceil(1000000 / 100);
+    const totalPages = Math.ceil(10000000 / 10);
 
     useEffect(() => {
       setLoading(true);

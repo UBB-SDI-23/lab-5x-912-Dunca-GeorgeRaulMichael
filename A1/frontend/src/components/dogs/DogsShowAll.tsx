@@ -84,7 +84,7 @@ import DropdownButton from 'react-bootstrap/DropdownButton';
     const [loading, setLoading] = useState(false);
     const [dogs, setDogs] = useState<Dogs[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
-    const totalPages = Math.ceil(1000000 / 100);
+    const totalPages = Math.ceil(1000000 / 10);
     const [Btn1, setBtn1] = useState(2);
     const [Btn2, setBtn2] = useState(3);
     const [Btn3, setBtn3] = useState(4);

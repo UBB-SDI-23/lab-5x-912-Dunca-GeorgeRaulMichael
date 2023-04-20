@@ -30,7 +30,7 @@ import { Owners } from "../../models/Owners";
     const [loading, setLoading] = useState(false);
     const [owners, setOwners] = useState<Owners[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
-    const totalPages = Math.ceil(1000000 / 100);
+    const totalPages = Math.ceil(1000000 / 10);
 
     useEffect(() => {
       setLoading(true);

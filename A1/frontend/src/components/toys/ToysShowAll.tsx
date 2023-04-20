@@ -34,7 +34,7 @@ import { Label } from "@mui/icons-material";
     const [loading, setLoading] = useState(false);
     const [toys, setToys] = useState<Toys[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
-    const totalPages = Math.ceil(1000000 / 100);
+    const totalPages = Math.ceil(1000000 / 10);
     const [number, setNumber] = useState(1); // Set initial state to 1
     const [InputValue,setInputValue]=useState(0);
     const [NextPage,setNextPage]=useState(0);
