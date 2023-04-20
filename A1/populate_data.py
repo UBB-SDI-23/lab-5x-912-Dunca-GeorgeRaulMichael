@@ -44,7 +44,7 @@ if __name__=='__main__':
         sql = f"ALTER TABLE dogs_dogowner DROP CONSTRAINT dogs_dogowner_owner_id_740a195f_fk_dogs_owner_id;"
         file.write(sql + "\n")
 
-        sql = f"ALTER TABLE dogs_toys DROP CONSTRAINT dogs_toy_dog_id_a028f4a6_fk_dogs_dog_id;"
+        sql = f"ALTER TABLE dogs_toy DROP CONSTRAINT dogs_toy_dog_id_a028f4a6_fk_dogs_dog_id;"
         file.write(sql + "\n")
 
         sql = f"DROP INDEX toy_price_idx;"
