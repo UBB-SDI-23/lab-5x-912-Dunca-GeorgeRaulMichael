@@ -22,6 +22,7 @@ class ToysList(APIView):
         #toys = Toy.objects.select_related('dog').prefetch_related('dog__toys').annotate(nr_of_toys=Count('dog__toys')-1).order_by('id')
         #toys = Toy.objects.select_related('dog').prefetch_related('dog__toys').annotate(nr_of_toys=Count('dog__toys', distinct=True)).order_by('id')
         #toys = Toy.objects.annotate(nr_of_toys=Count('dog', distinct=True)).order_by('id')
+        toys=Toy.objects.all().order_by('id')
         paginator = MyPagination()
         price = self.request.query_params.get('price')
         if price is not None:
