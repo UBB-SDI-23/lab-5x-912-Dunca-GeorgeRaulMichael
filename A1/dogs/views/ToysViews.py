@@ -19,14 +19,7 @@ class ToysList(APIView):
     @extend_schema(request=None,responses=ToySerializer)
     def get(self,request):
 
-        toys = Toy.objects.select_related('dog').prefetch_related('dog__toys').annotate(nr_of_toys=Count('dog__toys')-1).order_by('id')
-        from django.db.models import When
-        toys = Toy.objects.select_related('dog').prefetch_related('dog__toys').annotate(
-            nr_of_toys=Count(Case(
-                When(dog__toys__isnull=False, then=1),
-                output_field=models.IntegerField()
-            )) - 1
-        ).order_by('id')
+        #toys = Toy.objects.select_related('dog').prefetch_related('dog__toys').annotate(nr_of_toys=Count('dog__toys')-1).order_by('id')
         #toys = Toy.objects.select_related('dog').prefetch_related('dog__toys').annotate(nr_of_toys=Count('dog__toys', distinct=True)).order_by('id')
         #toys = Toy.objects.annotate(nr_of_toys=Count('dog', distinct=True)).order_by('id')
         paginator = MyPagination()
