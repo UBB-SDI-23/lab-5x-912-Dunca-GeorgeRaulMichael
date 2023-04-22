@@ -1,3 +1,5 @@
+from multiprocessing.dummy import Value
+
 from django.core.paginator import Paginator
 from django.http import Http404
 from drf_spectacular.utils import extend_schema
@@ -5,7 +7,7 @@ from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from django.db.models import Avg, Count, Case
+from django.db.models import Avg, Count, Case, Max
 from dogs.models import Toy
 from dogs.serializers import ToySerializer, ToySerializerDetails
 
@@ -20,7 +22,7 @@ class ToysList(APIView):
     def get(self,request):
 
         toys = Toy.objects.select_related('dog').prefetch_related('dog__toys').annotate(nr_of_toys=Count('dog__toys')-1).order_by('id')
-        
+        #toys = Toy.objects.select_related('dog').prefetch_related('dog__toys').annotate(nr_of_toys=Max(Count('dog__toys')-1, Value(0))).order_by('id')
         paginator = MyPagination()
         price = self.request.query_params.get('price')
         if price is not None:
