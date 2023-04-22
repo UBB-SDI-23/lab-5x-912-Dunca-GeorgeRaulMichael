@@ -136,8 +136,8 @@ if __name__=='__main__':
         sql = f"ALTER TABLE dogs_dogowner ADD CONSTRAINT dogs_dogowner_owner_id_740a195f_fk_dogs_owner_id FOREIGN KEY(owner_id) REFERENCES dogs_owner(id);"
         file.write(sql + "\n")
 
-        sql = f"CREATE INDEX toy_price_idx ON dogs_toy(price);"
-        file.write(sql + "\n")
+       # sql = f"CREATE INDEX toy_price_idx ON dogs_toy(price);"
+       # file.write(sql + "\n")
 
         sql = f"CREATE INDEX toy_dog_id_idx ON dogs_toy(dog_id);"
         file.write(sql + "\n")
