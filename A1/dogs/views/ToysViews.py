@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from django.db.models import Avg, Count
+from django.db.models import Avg, Count, Case
 from dogs.models import Toy
 from dogs.serializers import ToySerializer, ToySerializerDetails
 
@@ -19,8 +19,16 @@ class ToysList(APIView):
     @extend_schema(request=None,responses=ToySerializer)
     def get(self,request):
 
-        #toys = Toy.objects.select_related('dog').prefetch_related('dog__toys').annotate(nr_of_toys=Count('dog__toys')-1).order_by('id')
-        toys = Toy.objects.all().order_by('id')
+        toys = Toy.objects.select_related('dog').prefetch_related('dog__toys').annotate(nr_of_toys=Count('dog__toys')-1).order_by('id')
+        from django.db.models import When
+        toys = Toy.objects.select_related('dog').prefetch_related('dog__toys').annotate(
+            nr_of_toys=Count(Case(
+                When(dog__toys__isnull=False, then=1),
+                output_field=models.IntegerField()
+            )) - 1
+        ).order_by('id')
+        #toys = Toy.objects.select_related('dog').prefetch_related('dog__toys').annotate(nr_of_toys=Count('dog__toys', distinct=True)).order_by('id')
+        #toys = Toy.objects.annotate(nr_of_toys=Count('dog', distinct=True)).order_by('id')
         paginator = MyPagination()
         price = self.request.query_params.get('price')
         if price is not None:
