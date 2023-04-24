@@ -11,13 +11,13 @@ import { BACKEND_API_URL } from "../../constants";
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import axios from "axios";
+//import { currentPage } from './DogsShowAll';
 
 export const DogsDetails = () => {
 	const { dogId } = useParams();
     const [dog, setDogs] = useState<Dogs>();
-	const [currentPage, setCurrentPage] = useState(1);
-    const totalPages = Math.ceil(1000000 / 100);
-
+	
+	
 	useEffect(() => {
 		const fetchDog = async () => {
 			try {
@@ -37,7 +37,7 @@ export const DogsDetails = () => {
 		<Container>
 			<Card>
 				<CardContent>
-					<IconButton component={Link} sx={{ mr: 3 }} to={`/dogs`}>
+					<IconButton component={Link} sx={{ mr: 3 }} to={`/dogs/`}>
 						<ArrowBackIcon />
 					</IconButton>{" "}
 					<h1>Dogs Details</h1>

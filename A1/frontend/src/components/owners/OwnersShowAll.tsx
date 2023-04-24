@@ -78,6 +78,28 @@ import { Owners } from "../../models/Owners";
       }
     };
 
+    const handlePageChange = (newPage: number) => {
+      setCurrentPage(newPage);
+  
+      setLoading(true);
+      fetch(`${BACKEND_API_URL}/owners/?p=${newPage}`)
+        .then((response) => response.json())
+        .then((data) => {
+          setOwners(data.results);
+          setLoading(false);
+        });
+    };
+  
+    const pageNumbers = [];
+    for (
+      let i = Math.max(1, currentPage - 2);
+      i <= Math.min(totalPages, currentPage + 2);
+      i++
+    ) {
+      pageNumbers.push(i);
+    }
+
+
     return (
       <Container>
         <h1>All owners</h1>
@@ -86,21 +108,59 @@ import { Owners } from "../../models/Owners";
         {!loading && owners.length === 0 && <p>No owners found</p>}
         {!loading && (
           <Toolbar>
-          <IconButton onClick={handlePrevPage} style={{ marginRight:'370px'}} component={Link} sx={{ mr: 3 }} to={`/owners/?p=${currentPage}`} disabled={currentPage === 1}>
+
+          <div style={{width:"1200px"}}>
+            {currentPage > 1 && (
+              <button style={{margin:"3px"}} onClick={() => handlePageChange(currentPage - 1)}>
+                Previous
+              </button>
+            )}
+            {pageNumbers[0] > 1 && (
+              <>
+                <button style={{margin:"3px"}} onClick={() => handlePageChange(1)}>1</button>
+                {pageNumbers[0] > 2 && <span style={{margin:"3px"}} >...</span>}
+              </>
+            )}
+            {pageNumbers.map((pageNumber) => (
+              <button
+              style={{margin:"3px"}}
+                key={pageNumber}
+                onClick={() => handlePageChange(pageNumber)}
+              >
+                {pageNumber}
+              </button>
+            ))}
+            {pageNumbers[pageNumbers.length - 1] <= totalPages - 1 && (
+              <>
+                {pageNumbers[pageNumbers.length - 1] <= totalPages - 2 && (
+                  <span style={{margin:"3px"}}>...</span>
+                )}
+                <button style={{margin:"3px"}} onClick={() => handlePageChange(totalPages)}>
+                  {totalPages}
+                </button>
+              </>
+            )}
+            {currentPage < totalPages && (
+              <button style={{margin:"3px"}} onClick={() => handlePageChange(currentPage + 1)}>
+                Next
+              </button>
+            )}
+          </div>
+          {/* <IconButton onClick={handlePrevPage} style={{ marginRight:'370px'}} component={Link} sx={{ mr: 3 }} to={`/owners/?p=${currentPage}`} disabled={currentPage === 1}>
             <Tooltip title="Previous">
              <ArrowBackIosIcon sx={{ color: "white" }} />
             </Tooltip>
-          </IconButton>
-          <IconButton component={Link} sx={{ mr: 3 }} to={`/owners/add`}>
+          </IconButton> */}
+          <IconButton component={Link} sx={{ marginRight:'65px',marginLeft:'300px'  }} to={`/owners/add`}>
             <Tooltip title="Add a new owner" arrow>
               <AddIcon color="primary" />
             </Tooltip>
           </IconButton>
-        <IconButton style={{ marginLeft:'370px'}} onClick={handleNextPage} component={Link} sx={{ mr: 3 }}  to={`/owners/?p=${currentPage }`} disabled={currentPage === totalPages}>
+        {/* <IconButton style={{ marginLeft:'370px'}} onClick={handleNextPage} component={Link} sx={{ mr: 3 }}  to={`/owners/?p=${currentPage }`} disabled={currentPage === totalPages}>
             <Tooltip title="Next">
              <ArrowForwardIosIcon sx={{ color: "white" }} />
             </Tooltip>
-          </IconButton>
+          </IconButton> */}
         </Toolbar>
         )}
         {!loading && owners.length > 0 && (

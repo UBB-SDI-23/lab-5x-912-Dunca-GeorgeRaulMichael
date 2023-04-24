@@ -110,7 +110,27 @@ import { Label } from "@mui/icons-material";
         });
     };
 
-   
+    const handlePageChange = (newPage: number) => {
+      setCurrentPage(newPage);
+  
+      setLoading(true);
+      fetch(`${BACKEND_API_URL}/toys/?p=${newPage}&price=${InputValue}`)
+        .then((response) => response.json())
+        .then((data) => {
+          setToys(data.results);
+          setLoading(false);
+        });
+    };
+  
+    const pageNumbers = [];
+    for (
+      let i = Math.max(1, currentPage - 2);
+      i <= Math.min(totalPages, currentPage + 2);
+      i++
+    ) {
+      pageNumbers.push(i);
+    }
+
     return (
       <Container>
         <h1>All toys</h1>
@@ -119,12 +139,49 @@ import { Label } from "@mui/icons-material";
         {!loading && toys.length === 0 && <p>No toys found</p>}
         {!loading && (
           <Toolbar>
-          <IconButton onClick={handlePrevPage} style={{ marginRight:'370px'}} component={Link} sx={{ mr: 3 }} to={`/toys/?p=${currentPage}&price=${InputValue}`} disabled={! PrevPage}>
+            <div style={{width:"1200px"}}>
+            {currentPage > 1 && (
+              <button style={{margin:"3px"}} onClick={() => handlePageChange(currentPage - 1)}>
+                Previous
+              </button>
+            )}
+            {pageNumbers[0] > 1 && (
+              <>
+                <button style={{margin:"3px"}} onClick={() => handlePageChange(1)}>1</button>
+                {pageNumbers[0] > 2 && <span style={{margin:"3px"}} >...</span>}
+              </>
+            )}
+            {pageNumbers.map((pageNumber) => (
+              <button
+              style={{margin:"3px"}}
+                key={pageNumber}
+                onClick={() => handlePageChange(pageNumber)}
+              >
+                {pageNumber}
+              </button>
+            ))}
+            {pageNumbers[pageNumbers.length - 1] <= totalPages - 1 && (
+              <>
+                {pageNumbers[pageNumbers.length - 1] <= totalPages - 2 && (
+                  <span style={{margin:"3px"}}>...</span>
+                )}
+                <button style={{margin:"3px"}} onClick={() => handlePageChange(totalPages)}>
+                  {totalPages}
+                </button>
+              </>
+            )}
+            {currentPage < totalPages && (
+              <button style={{margin:"3px"}} onClick={() => handlePageChange(currentPage + 1)}>
+                Next
+              </button>
+            )}
+          </div>
+          {/* <IconButton onClick={handlePrevPage} style={{ marginRight:'370px'}} component={Link} sx={{ mr: 3 }} to={`/toys/?p=${currentPage}&price=${InputValue}`} disabled={! PrevPage}>
             <Tooltip title="Previous">
              <ArrowBackIosIcon sx={{ color: "white" }} />
             </Tooltip>
-          </IconButton>
-          <IconButton  style= {{ marginRight: '65px' }} component={Link} sx={{ mr: 3 }} to={`/toys/add`}>
+          </IconButton> */}
+          <IconButton  style= {{ marginLeft:'100px',marginRight: '45px' }} component={Link} sx={{ mr: 3 }} to={`/toys/add`}>
             <Tooltip title="Add a new toys" arrow>
               <AddIcon color="primary" />
             </Tooltip>
@@ -139,11 +196,11 @@ import { Label } from "@mui/icons-material";
         placeholder="Enter a number"
       />
       <Button onClick={handleSubmit}>Filter</Button>
-        <IconButton style={{ marginLeft:'370px'}} onClick={handleNextPage} component={Link} sx={{ mr: 3 }}  to={`/toys/?p=${currentPage }&price=${InputValue}`} disabled={!NextPage}>
+        {/* <IconButton style={{ marginLeft:'370px'}} onClick={handleNextPage} component={Link} sx={{ mr: 3 }}  to={`/toys/?p=${currentPage }&price=${InputValue}`} disabled={!NextPage}>
             <Tooltip title="Next">
              <ArrowForwardIosIcon sx={{ color: "white" }} />
             </Tooltip>
-          </IconButton>
+          </IconButton> */}
         </Toolbar>
         )}
         {!loading && toys.length > 0 && (

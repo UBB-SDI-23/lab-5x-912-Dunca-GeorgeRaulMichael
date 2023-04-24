@@ -79,18 +79,19 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import { Label } from "@mui/icons-material";
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
-
+  //export let currentPage = 1;
   export const DogsShowAll = () => {
     const [loading, setLoading] = useState(false);
     const [dogs, setDogs] = useState<Dogs[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
+   
     const totalPages = Math.ceil(1000000 / 10);
     const [Btn1, setBtn1] = useState(2);
     const [Btn2, setBtn2] = useState(3);
     const [Btn3, setBtn3] = useState(4);
     const [Btn4, setBtn4] = useState(5);
     const [BtnLast, setBtnLast] = useState(100);
-
+    
     useEffect(() => {
       setLoading(true);
       
@@ -145,6 +146,29 @@ import DropdownButton from 'react-bootstrap/DropdownButton';
       }
     };
 
+    const handlePageChange = (newPage: number) => {
+      setCurrentPage(newPage);
+  
+      setLoading(true);
+      fetch(`${BACKEND_API_URL}/dogs/?p=${newPage}`)
+        .then((response) => response.json())
+        .then((data) => {
+          setDogs(data.results);
+          setLoading(false);
+        });
+    };
+  
+    const pageNumbers = [];
+    for (
+      let i = Math.max(1, currentPage - 2);
+      i <= Math.min(totalPages, currentPage + 2);
+      i++
+    ) {
+      pageNumbers.push(i);
+    }
+
+
+
     const [open, setOpen] = React.useState(false);
     const numbers = Array.from({length: 100}, (_, index) => index + 1);
   const handleOpen = () => {
@@ -158,8 +182,47 @@ import DropdownButton from 'react-bootstrap/DropdownButton';
         {loading && <CircularProgress />}
         {!loading && dogs.length === 0 && <p>No dogs found</p>}
         {!loading && (
+          
           <Toolbar>
-          <div style={{ marginRight:"200px",marginLeft:"0%",width:"260px"}}>
+
+          <div style={{width:"1200px"}}>
+            {currentPage > 1 && (
+              <button style={{margin:"3px"}} onClick={() => handlePageChange(currentPage - 1)}>
+                Previous
+              </button>
+            )}
+            {pageNumbers[0] > 1 && (
+              <>
+                <button style={{margin:"3px"}} onClick={() => handlePageChange(1)}>1</button>
+                {pageNumbers[0] > 2 && <span style={{margin:"3px"}} >...</span>}
+              </>
+            )}
+            {pageNumbers.map((pageNumber) => (
+              <button
+              style={{margin:"3px"}}
+                key={pageNumber}
+                onClick={() => handlePageChange(pageNumber)}
+              >
+                {pageNumber}
+              </button>
+            ))}
+            {pageNumbers[pageNumbers.length - 1] <= totalPages - 1 && (
+              <>
+                {pageNumbers[pageNumbers.length - 1] <= totalPages - 2 && (
+                  <span style={{margin:"3px"}}>...</span>
+                )}
+                <button style={{margin:"3px"}} onClick={() => handlePageChange(totalPages)}>
+                  {totalPages}
+                </button>
+              </>
+            )}
+            {currentPage < totalPages && (
+              <button style={{margin:"3px"}} onClick={() => handlePageChange(currentPage + 1)}>
+                Next
+              </button>
+            )}
+          </div>
+          <div style={{ marginLeft:"100px",width:"360px"}}>
           <IconButton component={Link} sx={{ mr: 3 }} to={`/dogs/add`}>
             <Tooltip title="Add a new dog" arrow>
               <AddIcon color="primary" />
@@ -173,8 +236,8 @@ import DropdownButton from 'react-bootstrap/DropdownButton';
        
         </div>
         <p></p>
-       <div style={{width:"600px"}}>
-        <IconButton onClick={handlePrevPage} style={{marginLeft:"150px" ,marginRight:'50px'}} component={Link} sx={{ mr: 3 }} to={`/dogs/?p=${currentPage}`} disabled={currentPage === 1}>
+       <div style={{width:"10px"}}>
+        {/* <IconButton onClick={handlePrevPage} style={{marginLeft:"150px" ,marginRight:'50px'}} component={Link} sx={{ mr: 3 }} to={`/dogs/?p=${currentPage}`} disabled={currentPage === 1}>
             <Tooltip title="Previous">
              <ArrowBackIosIcon sx={{ color: "white" }} />
             </Tooltip>
@@ -186,7 +249,7 @@ import DropdownButton from 'react-bootstrap/DropdownButton';
             <Tooltip title="Next">
              <ArrowForwardIosIcon sx={{ color: "white" }} />
             </Tooltip>
-          </IconButton>
+          </IconButton> */}
 
           
           {/* <Dropdown style={{margin:"0px"}}>
@@ -291,3 +354,4 @@ import DropdownButton from 'react-bootstrap/DropdownButton';
       
     );
   };
+  

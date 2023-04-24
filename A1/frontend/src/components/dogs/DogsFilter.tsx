@@ -73,7 +73,30 @@ export const DogsFilter= () => {
            
         }
       };
+      
+
+      const handlePageChange = (newPage: number) => {
+        setCurrentPage(newPage);
     
+        setLoading(true);
+        fetch(`${BACKEND_API_URL}/dogs/avg-by-toy-price?p=${newPage}`)
+          .then((response) => response.json())
+          .then((data) => {
+            setDogs(data.results);
+            setLoading(false);
+          });
+      };
+    
+      const pageNumbers = [];
+      for (
+        let i = Math.max(1, currentPage - 2);
+        i <= Math.min(totalPages, currentPage + 2);
+        i++
+      ) {
+        pageNumbers.push(i);
+      }
+
+
     return (
     <Container>
         <h1 style={{marginTop:"65px"}}>All Dogs Ordered By The Avg price of their toys</h1>
@@ -84,7 +107,44 @@ export const DogsFilter= () => {
         
         {!loading && (
         <Toolbar>
-            <IconButton onClick={handlePrevPage} style={{marginLeft:'90px', marginRight:'370px'}} component={Link} sx={{ mr: 3 }} to={`/dogs/avg-by-toy-price?p=${currentPage}`} disabled={currentPage === 1}>
+          <div style={{width:"1200px"}}>
+            {currentPage > 1 && (
+              <button style={{margin:"3px"}} onClick={() => handlePageChange(currentPage - 1)}>
+                Previous
+              </button>
+            )}
+            {pageNumbers[0] > 1 && (
+              <>
+                <button style={{margin:"3px"}} onClick={() => handlePageChange(1)}>1</button>
+                {pageNumbers[0] > 2 && <span style={{margin:"3px"}} >...</span>}
+              </>
+            )}
+            {pageNumbers.map((pageNumber) => (
+              <button
+              style={{margin:"3px"}}
+                key={pageNumber}
+                onClick={() => handlePageChange(pageNumber)}
+              >
+                {pageNumber}
+              </button>
+            ))}
+            {pageNumbers[pageNumbers.length - 1] <= totalPages - 1 && (
+              <>
+                {pageNumbers[pageNumbers.length - 1] <= totalPages - 2 && (
+                  <span style={{margin:"3px"}}>...</span>
+                )}
+                <button style={{margin:"3px"}} onClick={() => handlePageChange(totalPages)}>
+                  {totalPages}
+                </button>
+              </>
+            )}
+            {currentPage < totalPages && (
+              <button style={{margin:"3px"}} onClick={() => handlePageChange(currentPage + 1)}>
+                Next
+              </button>
+            )}
+          </div>
+            {/* <IconButton onClick={handlePrevPage} style={{marginLeft:'90px', marginRight:'370px'}} component={Link} sx={{ mr: 3 }} to={`/dogs/avg-by-toy-price?p=${currentPage}`} disabled={currentPage === 1}>
               <Tooltip title="Previous">
                <ArrowBackIosIcon sx={{ color: "white" }} />
               </Tooltip>
@@ -94,7 +154,7 @@ export const DogsFilter= () => {
             <Tooltip title="Next">
              <ArrowForwardIosIcon sx={{ color: "white" }} />
             </Tooltip>
-          </IconButton>
+          </IconButton> */}
             </Toolbar>
         )}
         {!loading && dogs.length > 0 && (
