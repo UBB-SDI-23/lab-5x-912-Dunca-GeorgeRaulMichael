@@ -9,7 +9,7 @@ export const Home = () => {
 
 			<Container maxWidth="xl">
 				<Typography  variant="h1" component="h1" gutterBottom>
-					Welcome to the Dog App !
+					Welcome to the Dog App 
 				</Typography>
 			</Container>
 		</React.Fragment>
