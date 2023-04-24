@@ -83,11 +83,8 @@ if __name__=='__main__':
                 toy_colour=fake.color_name()
                 toy_price=fake.random_int(min=1,max=1000)
                 toy_dog=fake.random_int(min=1, max=1000000)
-                text = fake.text(max_nb_chars=800)
-                words = text.split(' ')
-                if len(words) > 100:
-                    words = words[:100]
-                toy_description=' '.join(words)
+                desciption=fake.words(nb=100)
+                toy_description=" ".join(desciption)
                 data.append(f"('{toy_name}', '{toy_material}', '{toy_colour}', '{toy_price}', '{toy_description}', '{toy_dog}')")
             sql = f"INSERT INTO dogs_toy (name, material, colour,price,descriptions,dog_id) VALUES {','.join(data)};"
             file.write(sql + "\n")
