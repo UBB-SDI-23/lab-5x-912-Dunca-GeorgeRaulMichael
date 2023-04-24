@@ -28,10 +28,10 @@ class DogsSerializer(serializers.ModelSerializer):
         return value
 
 class ToySerializer(serializers.ModelSerializer):
-    nr_of_toys = serializers.IntegerField(read_only=True)
+    #nr_of_toys = serializers.IntegerField(read_only=True)
     class Meta:
         model=Toy
-        fields=['id','name','dog','material','colour','price','descriptions','nr_of_toys']
+        fields=['id','name','dog','material','colour','price','descriptions']#,'nr_of_toys']
 
     def validate_price(self, value):
         if value <= 0:
