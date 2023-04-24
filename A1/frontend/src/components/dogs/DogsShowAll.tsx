@@ -160,8 +160,8 @@ import DropdownButton from 'react-bootstrap/DropdownButton';
   
     const pageNumbers = [];
     for (
-      let i = Math.max(1, currentPage - 2);
-      i <= Math.min(totalPages, currentPage + 2);
+      let i = Math.max(1, currentPage - 5);
+      i <= Math.min(totalPages, currentPage + 5);
       i++
     ) {
       pageNumbers.push(i);
@@ -199,7 +199,11 @@ import DropdownButton from 'react-bootstrap/DropdownButton';
             )}
             {pageNumbers.map((pageNumber) => (
               <button
-              style={{margin:"3px"}}
+              style={{
+                margin: "3px",
+                backgroundColor: currentPage === pageNumber ? "grey" : "",
+                pointerEvents: currentPage === pageNumber ? "none" : "auto"
+              }}
                 key={pageNumber}
                 onClick={() => handlePageChange(pageNumber)}
               >

@@ -92,8 +92,8 @@ import { DogOwners } from "../../models/DogOwner";
   
     const pageNumbers = [];
     for (
-      let i = Math.max(1, currentPage - 2);
-      i <= Math.min(totalPages, currentPage + 2);
+      let i = Math.max(1, currentPage - 5);
+      i <= Math.min(totalPages, currentPage + 5);
       i++
     ) {
       pageNumbers.push(i);
@@ -122,7 +122,11 @@ import { DogOwners } from "../../models/DogOwner";
             )}
             {pageNumbers.map((pageNumber) => (
               <button
-              style={{margin:"3px"}}
+              style={{
+                margin: "3px",
+                backgroundColor: currentPage === pageNumber ? "grey" : "",
+                pointerEvents: currentPage === pageNumber ? "none" : "auto"
+              }}
                 key={pageNumber}
                 onClick={() => handlePageChange(pageNumber)}
               >
