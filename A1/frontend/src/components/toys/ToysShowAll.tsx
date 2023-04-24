@@ -214,7 +214,7 @@ import { Label } from "@mui/icons-material";
                   <TableCell align="center">Material</TableCell>
                   <TableCell align="center">Colour</TableCell>
                   <TableCell align="center">Price</TableCell>
-                  <TableCell align="center">Description</TableCell>
+                  {/* <TableCell align="center">Description</TableCell> */}
                   <TableCell align="center">NrOtherToys</TableCell>
                   <TableCell align="center">Operations</TableCell>
                 </TableRow>
@@ -234,7 +234,7 @@ import { Label } from "@mui/icons-material";
                     <TableCell align="center">{toy.material}</TableCell>
                     <TableCell align="center">{toy.colour}</TableCell>
                     <TableCell align="center">{toy.price}</TableCell>
-                    <TableCell align="center">{toy.descriptions}</TableCell>
+                    {/* <TableCell align="center">{toy.descriptions}</TableCell> */}
                     <TableCell align="center">{toy.nr_of_toys}</TableCell>
                     <TableCell align="center">
                       <IconButton
