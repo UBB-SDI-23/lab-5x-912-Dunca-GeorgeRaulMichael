@@ -37,8 +37,7 @@ import { Label } from "@mui/icons-material";
     const totalPages = Math.ceil(1000000 / 10);
     const [number, setNumber] = useState(1); // Set initial state to 1
     const [InputValue,setInputValue]=useState(0);
-    const [NextPage,setNextPage]=useState(0);
-    const [PrevPage,setPrevPage]=useState(0);
+    
 
     useEffect(() => {
       setLoading(true);
@@ -48,49 +47,47 @@ import { Label } from "@mui/icons-material";
         .then((data) => {
          
           setToys(data.results);
-          setNextPage(data.next);
-          setPrevPage(data.previous);
           setLoading(false);
         });
     }, []);
     
     
-    const handleNextPage = () => {
-      if (NextPage) {
+    // const handleNextPage = () => {
+    //   if (NextPage) {
         
-        setCurrentPage(currentPage + 1);
+    //     setCurrentPage(currentPage + 1);
         
-        setLoading(true);
-        fetch(`${NextPage}`)
-        .then((response) => response.json())
-        .then((data) => {
+    //     setLoading(true);
+    //     fetch(`${NextPage}`)
+    //     .then((response) => response.json())
+    //     .then((data) => {
           
-          setToys(data.results);
-          setNextPage(data.next);
-          setPrevPage(data.previous);
-          setLoading(false);
-        });
+    //       setToys(data.results);
+    //       setNextPage(data.next);
+    //       setPrevPage(data.previous);
+    //       setLoading(false);
+    //     });
         
-      }
-    };
+    //   }
+    // };
   
-    const handlePrevPage = () => {
-      if (PrevPage) {
+    // const handlePrevPage = () => {
+    //   if (PrevPage) {
         
-        setCurrentPage(currentPage - 1);
+    //     setCurrentPage(currentPage - 1);
         
-        setLoading(true);
-        fetch(`${PrevPage}`)
-        .then((response) => response.json())
-        .then((data) => {
-          setToys(data.results);
-          setNextPage(data.next);
-          setPrevPage(data.previous);
-          setLoading(false);
-        });
+    //     setLoading(true);
+    //     fetch(`${PrevPage}`)
+    //     .then((response) => response.json())
+    //     .then((data) => {
+    //       setToys(data.results);
+    //       setNextPage(data.next);
+    //       setPrevPage(data.previous);
+    //       setLoading(false);
+    //     });
          
-      }
-    };
+    //   }
+    // };
 
 
     const handleSubmit = (event: { preventDefault: () => void }) => {
@@ -103,8 +100,7 @@ import { Label } from "@mui/icons-material";
         .then((response) => response.json())
         .then((data) => {
           setToys(data.results);
-          setNextPage(data.next);
-          setPrevPage(data.previous);
+          
           
           setLoading(false);
         });
