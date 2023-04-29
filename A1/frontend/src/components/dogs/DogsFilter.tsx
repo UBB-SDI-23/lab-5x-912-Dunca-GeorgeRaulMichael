@@ -98,12 +98,12 @@ export const DogsFilter= () => {
 
 
     return (
-    <Container>
-        <h1 style={{marginTop:"65px"}}>All Dogs Ordered By The Avg price of their toys</h1>
-        <label>Current Page: {currentPage}</label> 
+    <Container style={{ height:'100vh'}}>
+        <h1 style={{marginTop:"65px", color:"white"}}>All Dogs Ordered By The Avg price of their toys</h1>
+        <label style={{color:"white"}}>Current Page: {currentPage}</label> 
         {loading && <CircularProgress />}
 
-        {!loading && dogs.length == 0 && <div>No dogs found</div>}
+        {!loading && dogs.length == 0 && <div style={{color:"white"}}>No dogs found</div>}
         
         {!loading && (
         <Toolbar>

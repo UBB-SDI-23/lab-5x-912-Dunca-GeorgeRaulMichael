@@ -1,5 +1,7 @@
+from django.contrib.auth.models import AbstractUser, User
 from django.db import models
 from django.db.models import UniqueConstraint
+from django.contrib.auth.base_user import BaseUserManager, AbstractBaseUser
 
 
 class Dog(models.Model):
@@ -43,3 +45,70 @@ class DogOwner(models.Model):
     #    unique_together = (('dog', 'owner'),)
 
 
+# class CustomUserManager(BaseUserManager):
+#     def create_user(self,uame,passwd,**extra_fields):
+#
+#
+#         user=self.model(
+#             username=uame,
+#             **extra_fields
+#         )
+#         user.set_password(passwd)
+#         user.save()
+#
+#         return user
+#     def create_superuser(self,uname,passwd,**extra_fields):
+#         extra_fields.setdefault("is_staff",True)
+#         extra_fields.setdefault("is_superuser",True)
+#
+#         if extra_fields.get("is_staff") is not True:
+#             raise ValueError("Superuser has to have is_staff being True")
+#         if extra_fields.get("is_superuser") is not True:
+#             raise ValueError("Superuser has to have is_superuser being True")
+#         return self.create_user(uname,passwd,**extra_fields)
+#
+#
+# class User(AbstractUser):
+#     username = models.CharField(max_length=50,unique=True)
+#     objects = CustomUserManager()
+#
+#     USERNAME_FIELD = username
+#     REQUIRED_FIELDS = ['username']
+#
+#     def __str__(self):
+#         return self.username
+
+class CustomUserManager(BaseUserManager):
+    def create_user(self, username, password, **extra_fields):
+        """
+        Creates and saves a User with the given username and password.
+        """
+        if not username:
+            raise ValueError('The Username field must be set')
+
+        user = self.model(username=username, **extra_fields)
+        user.set_password(password)
+        print(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, username, password=None, **extra_fields):
+        """
+        Creates and saves a superuser with the given username and password.
+        """
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+        return self.create_user(username, password, **extra_fields)
+# class User(AbstractBaseUser):
+#     username=models.CharField(max_length=50)
+#     password=models.CharField(max_length=50)
+#     USERNAME_FIELD = 'username'
+#     REQUIRED_FIELDS = ['username','password']
+#     objects = CustomUserManager()
+class UserProfile(models.Model):
+    #user = models.OneToOneField(User, on_delete=models.CASCADE,default=None)
+    bio=models.CharField(max_length=10000)
+    birthday=models.DateField(null=True)
+    email=models.CharField(max_length=50)
+    country=models.CharField(max_length=50)
+    gender=models.CharField(max_length=50)

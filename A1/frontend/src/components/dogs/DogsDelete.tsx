@@ -23,7 +23,7 @@ export const DogsDelete = () => {
 	};
 
 	return (
-		<Container>
+		<Container style={{ height:'100vh',marginTop:'80px'}}>
 			<Card>
 				<CardContent>
 					<IconButton component={Link} sx={{ mr: 3 }} to={`/dogs`}>

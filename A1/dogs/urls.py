@@ -14,9 +14,12 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, re_path
+from django.urls import path
 from drf_spectacular.views import SpectacularAPIView,SpectacularSwaggerView
 from dogs.views import DogsViews, ToysViews, OwnersViews, DogOwnersViews
+from rest_framework_simplejwt.views import TokenObtainPairView,TokenRefreshView
+
+from dogs.views.UserViews import RegistrationView, UserDetails
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -35,7 +38,15 @@ urlpatterns = [
     path('api/schema/docs/',SpectacularSwaggerView.as_view(url_name="schema")),
     path('dogs/autocomplete',DogsViews.DogsViewAutocmomplete.as_view()),
     path('owners/autocomplete',OwnersViews.OwnersViewAutocmomplete.as_view()),
+    #path('token/',TokenObtainPairView.as_view()),
+    path('token/refresh',TokenRefreshView.as_view()),
+    path('user/register',RegistrationView.as_view()),
+    path('user/login',TokenObtainPairView.as_view()),
+    #path('user/details/<int:id>',UserDetails.as_view())
 ]
+
+
+
 
 
 

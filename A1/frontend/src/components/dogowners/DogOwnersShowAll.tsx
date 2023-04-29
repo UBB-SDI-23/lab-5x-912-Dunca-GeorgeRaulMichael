@@ -99,13 +99,12 @@ import { DogOwners } from "../../models/DogOwner";
       pageNumbers.push(i);
     }
 
-
     return (
-      <Container>
-        <h1>All dogowners</h1>
-        <label>Current Page: {currentPage}</label> 
+      <Container style={{ height:'120vh'}}>
+        <h1 style={{ color:'white'}}>All dogowners</h1>
+        <label style={{ color:'white'}}>Current Page: {currentPage}</label> 
         {loading && <CircularProgress />}
-        {!loading && dogowners.length === 0 && <p>No dogowners found</p>}
+        {!loading && dogowners.length === 0 && <p style={{ color:'white'}}>No dogowners found</p>}
         {!loading && (
           <Toolbar>
             <div style={{width:"1200px"}}>

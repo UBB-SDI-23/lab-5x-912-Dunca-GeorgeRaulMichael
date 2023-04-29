@@ -101,11 +101,11 @@ import { Owners } from "../../models/Owners";
 
 
     return (
-      <Container>
-        <h1>All owners</h1>
-        <label>Current Page: {currentPage}</label> 
+      <Container style={{ height:'120vh'}}>
+        <h1 style={{ color:'white'}}>All owners</h1>
+        <label style={{ color:'white'}}>Current Page: {currentPage}</label> 
         {loading && <CircularProgress />}
-        {!loading && owners.length === 0 && <p>No owners found</p>}
+        {!loading && owners.length === 0 && <p style={{ color:'white'}}>No owners found</p>}
         {!loading && (
           <Toolbar>
 

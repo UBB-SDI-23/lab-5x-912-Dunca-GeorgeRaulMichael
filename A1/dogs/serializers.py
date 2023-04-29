@@ -1,11 +1,16 @@
+import datetime
 import re
 from datetime import date
 
-
+import pycountry as pycountry
+from django.contrib.auth import authenticate
 from rest_framework import serializers
-from .models import Dog, Owner, DogOwner
-from .models import Toy
+from rest_framework.exceptions import AuthenticationFailed
+from rest_framework_simplejwt.tokens import RefreshToken
 
+from .models import Dog, Owner, DogOwner, UserProfile
+from .models import Toy
+from django.contrib.auth.models import User
 
 #python -> json
 
@@ -21,6 +26,7 @@ class DogsSerializer(serializers.ModelSerializer):
         if value < min_date:
             raise serializers.ValidationError(f"The date_of_birth must be higher than {min_date}!")
         return value
+
     def validate_name(self, value):
 
         if len(value)<=2:
@@ -146,3 +152,103 @@ class DogOwnersSerializerDetails(serializers.ModelSerializer):
         model = DogOwner
         fields = ['dog', 'owner', 'adoption_date', 'adoption_fee']
 
+class UserRegistationSerializer(serializers.ModelSerializer):
+    username=serializers.CharField(max_length=50,min_length=4)
+    password = serializers.CharField(write_only=True, required=True)
+    class Meta:
+        model = User
+        fields = ['username','password']
+    def validate(self,args):
+        username=args.get('username',None)
+        if User.objects.filter(username=username).exists():
+            raise serializers.ValidationError('Username already exists!')
+        return super().validate(args)
+
+    def validate_password(self,value):
+        """
+        Validate that a password meets certain complexity requirements:
+        - at least 8 characters long
+        - contains at least one uppercase letter
+        - contains at least one lowercase letter
+        - contains at least one digit
+        - contains at least one special character
+        """
+        if len(value) < 8:
+            raise serializers.ValidationError("The password must be at least 8 characters long.")
+        if not any(char.isupper() for char in value):
+            raise serializers.ValidationError("The password must contain at least one uppercase letter.")
+        if not any(char.islower() for char in value):
+            raise serializers.ValidationError("The password must contain at least one lowercase letter.")
+        if not any(char.isdigit() for char in value):
+            raise serializers.ValidationError("The password must contain at least one digit.")
+        if not any(char in ['!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '+', '=', '{', '}', '[', ']', '|', ':', ';', '"', "'", '<', '>', ',', '.', '?', '/'] for char in value):
+            raise serializers.ValidationError("The password must contain at least one special character.")
+
+    def create(self, validated_data):
+        user = User.objects.create_user(
+            username=validated_data["username"],
+            password=validated_data["password"],
+        )
+        refresh = RefreshToken.for_user(user)
+
+        # Create and store confirmation code for email verification
+        user.confirmation_code = str(refresh.access_token)
+        user.code_expires_at = datetime.datetime.now() + datetime.timedelta(minutes=60)
+
+        user.save()
+
+
+        return user
+        #return User.objects.create_user(**validated_data)
+
+class UserLoginSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField(write_only=True)
+
+    def validate(self, attrs):
+        username = attrs.get("username")
+        password = attrs.get("password")
+
+        if username and password:
+            user = authenticate(username=username, password=password)
+
+            if not user:
+                raise AuthenticationFailed("Invalid credentials")
+
+            if not user.is_active:
+                raise AuthenticationFailed("User is inactive")
+
+            refresh = RefreshToken.for_user(user)
+            return {
+                "access_token": str(refresh.access_token),
+                "refresh_token": str(refresh),
+            }
+        else:
+            raise AuthenticationFailed("Must include username and password")
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = ['bio','email','birthday','country','gender']
+
+    def validate_bio(self, value):
+        if len(value)>160:
+            raise serializers.ValidationError(f"The bio must have at most 160 characters!")
+        return value
+
+    def validate_email(self, value):
+        # Define the regular expression pattern
+        pattern = r"^.+@.+\..+$"
+
+        # Use the re module to check if the string matches the pattern
+        if not re.match(pattern, value):
+            raise serializers.ValidationError(f"The email must be a valid one!")
+        return value
+
+
+    def validate_country(self, value):
+
+        if not pycountry.countries.get(name=value):
+            raise serializers.ValidationError(f"The country is not a valid one!")
+        return value

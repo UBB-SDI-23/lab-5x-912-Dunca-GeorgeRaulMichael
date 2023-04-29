@@ -128,11 +128,11 @@ import { Label } from "@mui/icons-material";
     }
 
     return (
-      <Container>
-        <h1>All toys</h1>
-        <label>Current Page: {currentPage}</label> 
+      <Container style={{ height:'120vh'}}>
+        <h1 style={{color:"white"}}>All toys</h1>
+        <label style={{color:"white"}}>Current Page: {currentPage}</label> 
         {loading && <CircularProgress />}
-        {!loading && toys.length === 0 && <p>No toys found</p>}
+        {!loading && toys.length === 0 && <p style={{color:"white"}}>No toys found</p>}
         {!loading && (
           <Toolbar>
             <div style={{width:"1200px"}}>

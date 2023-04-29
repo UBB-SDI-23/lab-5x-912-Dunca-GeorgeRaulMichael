@@ -175,12 +175,12 @@ import DropdownButton from 'react-bootstrap/DropdownButton';
     setOpen(!open);
   };
     return (
-      <Container >
-        <h1>All dogs</h1>
-        <label>Current Page: {currentPage}</label> 
+      <Container style={{ height:'120vh'}}>
+        <h1 style={{color:"white"}}>All dogs</h1>
+        <label style={{color:"white"}}>Current Page: {currentPage}</label> 
        
         {loading && <CircularProgress />}
-        {!loading && dogs.length === 0 && <p>No dogs found</p>}
+        {!loading && dogs.length === 0 && <p style={{color:"white"}}>No dogs found</p>}
         {!loading && (
           
           <Toolbar>
@@ -226,7 +226,7 @@ import DropdownButton from 'react-bootstrap/DropdownButton';
               </button>
             )}
           </div>
-          <div style={{ marginLeft:"100px",width:"360px"}}>
+          <div style={{ marginLeft:"20px",width:"400px"}}>
           <IconButton component={Link} sx={{ mr: 3 }} to={`/dogs/add`}>
             <Tooltip title="Add a new dog" arrow>
               <AddIcon color="primary" />

@@ -3,7 +3,7 @@ import React from "react";
 
 export const Home = () => {
 	return (
-		<div style={{ color:'white', marginTop:'20%' , height:'500px'}}>
+		<div style={{ color:'white', marginTop:'20%' , height:'100vh'}}>
 		<React.Fragment>
 			<CssBaseline />
 
@@ -16,3 +16,4 @@ export const Home = () => {
 		</div>
 	);
 };
+

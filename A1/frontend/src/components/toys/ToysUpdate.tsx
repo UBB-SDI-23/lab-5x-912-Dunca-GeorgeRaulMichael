@@ -116,7 +116,7 @@ const [dogs,setDogs]=useState<Dogs[]>([]);
 	}
 	  }
    return (
-      <Container>
+      <Container style={{ height:'100vh',marginTop:'100px'}}>
          <Card>
          <CardContent>
             <IconButton component={Link} sx={{ mr: 3 }} to={`/toys/${toyId}/details`}>
