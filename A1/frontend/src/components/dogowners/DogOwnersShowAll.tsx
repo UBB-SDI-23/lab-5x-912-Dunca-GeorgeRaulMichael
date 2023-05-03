@@ -101,7 +101,7 @@ import { DogOwners } from "../../models/DogOwner";
 
     return (
       <Container style={{ height:'120vh'}}>
-        <h1 style={{ color:'white'}}>All dogowners</h1>
+        <h1 style={{ color:'white'}}>All dogowners !!!</h1>
         <label style={{ color:'white'}}>Current Page: {currentPage}</label> 
         {loading && <CircularProgress />}
         {!loading && dogowners.length === 0 && <p style={{ color:'white'}}>No dogowners found</p>}
