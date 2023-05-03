@@ -1,8 +1,10 @@
+import datetime
+
 from django.contrib.auth.models import AbstractUser, User
 from django.db import models
 from django.db.models import UniqueConstraint
 from django.contrib.auth.base_user import BaseUserManager, AbstractBaseUser
-
+from django.utils import timezone
 
 class Dog(models.Model):
     name=models.CharField(max_length=50)
@@ -79,7 +81,9 @@ class DogOwner(models.Model):
 #         return self.username
 
 class CustomUserManager(BaseUserManager):
-    def create_user(self, username, password, **extra_fields):
+
+
+    def create_user(self, username, password=None, **extra_fields):
         """
         Creates and saves a User with the given username and password.
         """
@@ -88,7 +92,6 @@ class CustomUserManager(BaseUserManager):
 
         user = self.model(username=username, **extra_fields)
         user.set_password(password)
-        print(password)
         user.save(using=self._db)
         return user
 
@@ -106,9 +109,16 @@ class CustomUserManager(BaseUserManager):
 #     REQUIRED_FIELDS = ['username','password']
 #     objects = CustomUserManager()
 class UserProfile(models.Model):
-    #user = models.OneToOneField(User, on_delete=models.CASCADE,default=None)
+    confirmation_code = models.CharField(null=True,max_length=200,default=None)
+    code_expires_at = models.DateTimeField(null=True,default=None)
+
+    user = models.OneToOneField(User, on_delete=models.CASCADE,default=None,null=True)
+
     bio=models.CharField(max_length=10000)
     birthday=models.DateField(null=True)
     email=models.CharField(max_length=50)
     country=models.CharField(max_length=50)
     gender=models.CharField(max_length=50)
+
+    def is_confirmation_code_valid(self):
+       return self.code_expires_at is not None and self.code_expires_at < timezone.now()
