@@ -7,17 +7,20 @@ from django.contrib.auth.base_user import BaseUserManager, AbstractBaseUser
 from django.utils import timezone
 
 class Dog(models.Model):
+    users = models.ForeignKey(User, on_delete=models.CASCADE,default=None,null=True)
     name=models.CharField(max_length=50)
     breed=models.CharField(max_length=100)
     colour= models.CharField(max_length=50)
     is_healthy=models.BooleanField()
     date_of_birth=models.DateField()
+
     #owners = models.ManyToManyField('Owner', through='DogOwner')
 
     def __str__(self):
         return f"{self.name} {self.breed}"
 
 class Toy(models.Model):
+    users = models.ForeignKey(User, on_delete=models.CASCADE,default=None,null=True)
     name=models.CharField(max_length=50)
     material=models.CharField(max_length=100)
     colour= models.CharField(max_length=50)
@@ -28,6 +31,7 @@ class Toy(models.Model):
         return f"{self.name}"
 
 class Owner(models.Model):
+    users = models.ForeignKey(User, on_delete=models.CASCADE,default=None,null=True)
     first_name=models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     email=models.CharField(max_length=50)
@@ -38,6 +42,7 @@ class Owner(models.Model):
         return f"{self.first_name}"
 
 class DogOwner(models.Model):
+    users = models.ForeignKey(User, on_delete=models.CASCADE,default=None,null=True)
     dog=models.ForeignKey(Dog,on_delete=models.CASCADE,related_name='owners')
     owner=models.ForeignKey(Owner,on_delete=models.CASCADE,related_name='dogs')
     adoption_date=models.DateField()
@@ -116,9 +121,9 @@ class UserProfile(models.Model):
 
     bio=models.CharField(max_length=10000)
     birthday=models.DateField(null=True)
-    email=models.CharField(max_length=50)
-    country=models.CharField(max_length=50)
-    gender=models.CharField(max_length=50)
+    email=models.CharField(max_length=150)
+    country=models.CharField(max_length=10000)
+    gender=models.CharField(max_length=150)
 
     def is_confirmation_code_valid(self):
         #ADSDASDAS

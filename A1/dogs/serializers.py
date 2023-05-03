@@ -20,7 +20,7 @@ class DogsSerializer(serializers.ModelSerializer):
     nr_of_owners = serializers.IntegerField(read_only=True)
     class Meta:
         model=Dog
-        fields=['id','name','breed','colour','is_healthy','date_of_birth','avg_price','nr_of_owners']
+        fields=['id','name','breed','colour','is_healthy','date_of_birth','avg_price','nr_of_owners','user']
 
     def validate_date_of_birth(self, value):
         min_date = date(2010, 1, 1)
@@ -38,7 +38,7 @@ class ToySerializer(serializers.ModelSerializer):
     nr_of_toys = serializers.IntegerField(read_only=True)
     class Meta:
         model=Toy
-        fields=['id','name','dog','material','colour','price','descriptions','nr_of_toys']
+        fields=['id','name','dog','material','colour','price','descriptions','nr_of_toys','user']
 
     def validate_price(self, value):
         if value <= 0:
@@ -49,7 +49,7 @@ class OwnerSerializer(serializers.ModelSerializer):
     nr_of_dogs = serializers.IntegerField(read_only=True)
     class Meta:
         model=Owner
-        fields=['id','first_name','last_name','email','city','date_of_birth','nr_of_dogs']
+        fields=['id','first_name','last_name','email','city','date_of_birth','nr_of_dogs','user']
 
     def validate_date_of_birth(self, value):
         max_date = date(2016, 1, 1)
@@ -72,7 +72,7 @@ class DogOwnerSerializer(serializers.ModelSerializer):
     owner = serializers.PrimaryKeyRelatedField(queryset=Owner.objects.all())
     class Meta:
         model = DogOwner
-        fields = ['dog', 'owner','adoption_date','adoption_fee']
+        fields = ['dog', 'owner','adoption_date','adoption_fee','user']
         #depth=1
 
 
@@ -98,7 +98,7 @@ class DogsSerializerDetails(serializers.ModelSerializer):
     owners=DogOwnerSerializerForDogs(many=True)
     class Meta:
         model=Dog
-        fields=['id','name','breed','colour','is_healthy','date_of_birth','toys','owners']
+        fields=['id','name','breed','colour','is_healthy','date_of_birth','toys','owners','user']
 
     def validate_date_of_birth(self, value):
         min_date = date(2010, 1, 1)
@@ -115,7 +115,7 @@ class DogsSerializerDetails(serializers.ModelSerializer):
 class ToySerializerDetails(serializers.ModelSerializer):
     class Meta:
         model=Toy
-        fields=['id','name','dog','material','colour','price','descriptions']
+        fields=['id','name','dog','material','colour','price','descriptions','user']
         depth=1
 
     def validate_price(self, value):
@@ -129,7 +129,7 @@ class OwnerSerializerDetails(serializers.ModelSerializer):
     dogs=DogOwnerSerializerForOwners(many=True)
     class Meta:
         model = Owner
-        fields=['id','first_name','last_name','email','city','date_of_birth','dogs']
+        fields=['id','first_name','last_name','email','city','date_of_birth','dogs','user']
 
     def validate_date_of_birth(self, value):
         max_date = date(2016, 1, 1)
@@ -151,7 +151,7 @@ class DogOwnersSerializerDetails(serializers.ModelSerializer):
     owner=OwnerSerializer()
     class Meta:
         model = DogOwner
-        fields = ['dog', 'owner', 'adoption_date', 'adoption_fee']
+        fields = ['dog', 'owner', 'adoption_date', 'adoption_fee','user']
 
 class UserRegistationSerializer(serializers.ModelSerializer):
     username=serializers.CharField(max_length=50,min_length=4)

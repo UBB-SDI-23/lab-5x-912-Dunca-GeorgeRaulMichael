@@ -1,9 +1,10 @@
+import datetime
 import os
 import random
 from datetime import date, timedelta
 
 import django
-
+import pytz
 
 #os.environ.setdefault('DEFAULT_SETTINGS_MODULE','dogs.settings')
 
@@ -11,6 +12,7 @@ import django
 
 
 #from dogs.models import Dog
+
 from faker.providers import date_time
 from psycopg2._psycopg import cursor
 from psycopg2.extras import execute_values
@@ -28,6 +30,13 @@ if __name__=='__main__':
 
     batch_size = 1000
     with open('dogs.sql', 'w') as file:
+
+        sql = "DELETE FROM auth_user WHERE id > 1;\n"
+        sql += "ALTER SEQUENCE auth_user_id_seq RESTART WITH 2;\n"
+        file.write(sql)
+
+        sql = f"TRUNCATE TABLE dogs_userprofile RESTART IDENTITY CASCADE;"
+        file.write(sql + "\n")
 
         sql = f"TRUNCATE TABLE dogs_dogowner RESTART IDENTITY CASCADE;"
         file.write(sql + "\n")
@@ -59,18 +68,56 @@ if __name__=='__main__':
         sql = f"DROP INDEX dogowner_owner_id_idx;"
         file.write(sql + "\n")
 
+        timezone = pytz.timezone('Europe/Bucharest')
+        user_password = "Password1@"
+        user_isactive = True
+        user_issuper = False
+        user_isstaff = False
+        id_user=1
+        for i in range(0, 10000, 1000):
+            data = []
+            data2=[]
+            for j in range(i, i + 1000):
+                id_user+=1
+                user_username = f"user{id_user}"
+                user_firstname=""
+                user_lastname=""
+                user_mail=""
+                user_datejoinned=datetime.datetime.now(timezone)
 
+                # user_bio = fake.text(max_nb_chars=150)
+                # user_birthday = fake.date_of_birth(minimum_age=9)
+                # user_email = fake.email()
+                # user_country = fake.country().replace("'", " ")
+                # user_gender = random.choice(["Male", "Female"])
+
+                user_bio = fake.text(max_nb_chars=160)
+                user_birthday = fake.date_of_birth(minimum_age=9)
+                user_email = fake.email()
+                user_country = fake.country().replace("'", " ")
+                user_gender = random.choice(["Male", "Female"])
+
+
+                data.append(f"('{user_password}', '{user_issuper}', '{user_username}', '{user_isstaff}', '{user_isactive}', '{user_datejoinned}', '{user_firstname}','{user_lastname}','{user_mail}')")
+                data2.append(f"('{user_bio}', '{user_birthday}', '{user_email}', '{user_country}', '{user_gender}', '{id_user}')")
+            sql = f"INSERT INTO auth_user (password, is_superuser, username,is_staff,is_active,date_joined,first_name,last_name,email) VALUES {','.join(data)};"
+            file.write(sql + "\n")
+            sql = f"INSERT INTO dogs_userprofile (bio, birthday,email, country,gender,user_id) VALUES {','.join(data2)};"
+            file.write(sql + "\n")
+        print("Users done")
 
         for i in range(0, 1000000, 1000):
             data = []
             for j in range(i, i + 1000):
+                dog_user=fake.random_int(min=1, max=10000)
                 dog_name = fake.first_name()
                 dog_breed = random.choice(dog_breeds)
                 dog_color = fake.color_name()
                 dog_is_healthy=random.choice([True, False])
                 dog_date_of_birth = fake.date_between(start_date='-12y', end_date='today')
-                data.append(f"('{dog_name}', '{dog_breed}', '{dog_color}', '{dog_is_healthy}', '{dog_date_of_birth}')")
-            sql = f"INSERT INTO dogs_dog (name, breed, colour,is_healthy,date_of_birth) VALUES {','.join(data)};"
+                data.append(f"('{dog_name}', '{dog_breed}', '{dog_color}', '{dog_is_healthy}', '{dog_date_of_birth}', '{dog_user}')")
+
+            sql = f"INSERT INTO dogs_dog (name, breed, colour,is_healthy,date_of_birth,users) VALUES {','.join(data)};"
             file.write(sql + "\n")
 
         print("Dogs done")
@@ -78,6 +125,7 @@ if __name__=='__main__':
         for i in range(0, 1000000, 1000):
             data = []
             for j in range(i, i + 1000):
+                toy_user = fake.random_int(min=1, max=10000)
                 toy_name=random.choice(toy_names)
                 toy_material=random.choice(toy_materials)
                 toy_colour=fake.color_name()
@@ -85,8 +133,8 @@ if __name__=='__main__':
                 toy_dog=fake.random_int(min=1, max=1000000)
                 desciption=fake.words(nb=100)
                 toy_description=" ".join(desciption)
-                data.append(f"('{toy_name}', '{toy_material}', '{toy_colour}', '{toy_price}', '{toy_description}', '{toy_dog}')")
-            sql = f"INSERT INTO dogs_toy (name, material, colour,price,descriptions,dog_id) VALUES {','.join(data)};"
+                data.append(f"('{toy_name}', '{toy_material}', '{toy_colour}', '{toy_price}', '{toy_description}', '{toy_dog}','{toy_user}')")
+            sql = f"INSERT INTO dogs_toy (name, material, colour,price,descriptions,dog_id,users) VALUES {','.join(data)};"
             file.write(sql + "\n")
 
         print("Toys done")
@@ -94,13 +142,14 @@ if __name__=='__main__':
             data=[]
 
             for j in range(i, i+1000):
+                owner_user = fake.random_int(min=1, max=10000)
                 owner_first_name=fake.first_name()
                 owner_last_name=fake.last_name()
                 owner_email=fake.email()
                 owner_city=fake.city()
                 owner_date_of_birth=fake.date_of_birth(minimum_age =9)
-                data.append(f"('{owner_first_name}', '{owner_last_name}', '{owner_email}', '{owner_city}', '{owner_date_of_birth}')")
-            sql = f"INSERT INTO dogs_owner (first_name, last_name, email, city, date_of_birth) VALUES {','.join(data)};"
+                data.append(f"('{owner_first_name}', '{owner_last_name}', '{owner_email}', '{owner_city}', '{owner_date_of_birth}','{owner_user}')")
+            sql = f"INSERT INTO dogs_owner (first_name, last_name, email, city, date_of_birth,users) VALUES {','.join(data)};"
             file.write(sql + "\n")
 
         print("Owners done")
@@ -115,13 +164,14 @@ if __name__=='__main__':
             dogowner_dog=fake.random_int(min=i * 100 + 1, max=(i + 1) * 100)
             data=[]
             for j in range(1000):
+                dogowner_user = fake.random_int(min=1, max=10000)
                 dogowner_owner = fake.random_int(min=j * 1000 + 1, max=(j + 1) * 1000)
 
                 dogowner_adoption_date = fake.date_between(start_date=dog_date_of_birth, end_date='today')
                 dogowner_adoption_fee = fake.random_int(min=1,max=10000)
-                data.append(f"('{dogowner_dog}', '{dogowner_owner}', '{dogowner_adoption_date}', '{dogowner_adoption_fee}')")
+                data.append(f"('{dogowner_dog}', '{dogowner_owner}', '{dogowner_adoption_date}', '{dogowner_adoption_fee}','{dogowner_user}')")
 
-            sql = f"INSERT INTO dogs_dogowner (dog_id, owner_id, adoption_date, adoption_fee) VALUES {','.join(data)};"
+            sql = f"INSERT INTO dogs_dogowner (dog_id, owner_id, adoption_date, adoption_fee,users) VALUES {','.join(data)};"
             file.write(sql + "\n")
 
         sql = f"ALTER TABLE dogs_toy ADD CONSTRAINT dogs_toy_dog_id_a028f4a6_fk_dogs_dog_id FOREIGN KEY(dog_id) REFERENCES dogs_dog(id);"
@@ -144,4 +194,19 @@ if __name__=='__main__':
 
         sql = f"CREATE INDEX dogowner_dog_id_idx ON dogs_dogowner(dog_id);"
         file.write(sql + "\n")
+
+        sql = f"CREATE INDEX toy_user_idx ON dogs_toy(user);"
+        file.write(sql + "\n")
+
+        sql = f"CREATE INDEX dog_user_idx ON dogs_dog(user);"
+        file.write(sql + "\n")
+
+        sql = f"CREATE INDEX owner_user_idx ON dogs_owner(user);"
+        file.write(sql + "\n")
+
+        sql = f"CREATE INDEX dogowner_user_idx ON dogs_dogowner(user);"
+        file.write(sql + "\n")
+
+
+
 
