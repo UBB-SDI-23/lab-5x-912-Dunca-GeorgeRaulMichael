@@ -121,4 +121,5 @@ class UserProfile(models.Model):
     gender=models.CharField(max_length=50)
 
     def is_confirmation_code_valid(self):
+        #ADSDASDAS
        return self.code_expires_at is not None and self.code_expires_at < timezone.now()
