@@ -1,5 +1,6 @@
 import datetime
 import re
+import uuid
 from datetime import date
 
 import pycountry as pycountry
@@ -160,43 +161,35 @@ class UserRegistationSerializer(serializers.ModelSerializer):
         fields = ['username','password']
     def validate(self,args):
         username=args.get('username',None)
+        password = args.get('password', None)
         if User.objects.filter(username=username).exists():
             raise serializers.ValidationError('Username already exists!')
+        if len(password) < 8:
+            raise serializers.ValidationError("The password must be at least 8 characters long.")
+        if not any(char.isupper() for char in password):
+            raise serializers.ValidationError("The password must contain at least one uppercase letter.")
+        if not any(char.islower() for char in password):
+            raise serializers.ValidationError("The password must contain at least one lowercase letter.")
+        if not any(char.isdigit() for char in password):
+            raise serializers.ValidationError("The password must contain at least one digit.")
+        if not any(
+                char in ['!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '+', '=', '{', '}', '[', ']', '|',
+                         ':', ';', '"', "'", '<', '>', ',', '.', '?', '/'] for char in password):
+            raise serializers.ValidationError("The password must contain at least one special character.")
         return super().validate(args)
 
-    def validate_password(self,value):
-        """
-        Validate that a password meets certain complexity requirements:
-        - at least 8 characters long
-        - contains at least one uppercase letter
-        - contains at least one lowercase letter
-        - contains at least one digit
-        - contains at least one special character
-        """
-        if len(value) < 8:
-            raise serializers.ValidationError("The password must be at least 8 characters long.")
-        if not any(char.isupper() for char in value):
-            raise serializers.ValidationError("The password must contain at least one uppercase letter.")
-        if not any(char.islower() for char in value):
-            raise serializers.ValidationError("The password must contain at least one lowercase letter.")
-        if not any(char.isdigit() for char in value):
-            raise serializers.ValidationError("The password must contain at least one digit.")
-        if not any(char in ['!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '+', '=', '{', '}', '[', ']', '|', ':', ';', '"', "'", '<', '>', ',', '.', '?', '/'] for char in value):
-            raise serializers.ValidationError("The password must contain at least one special character.")
 
     def create(self, validated_data):
         user = User.objects.create_user(
             username=validated_data["username"],
             password=validated_data["password"],
+            is_active=False
         )
-        refresh = RefreshToken.for_user(user)
 
         # Create and store confirmation code for email verification
-        user.confirmation_code = str(refresh.access_token)
-        user.code_expires_at = datetime.datetime.now() + datetime.timedelta(minutes=60)
-
+        user.confirmation_code = str(uuid.uuid4())
+        user.code_expires_at = datetime.datetime.now() + datetime.timedelta(minutes=10)
         user.save()
-
 
         return user
         #return User.objects.create_user(**validated_data)
@@ -248,7 +241,10 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
 
     def validate_country(self, value):
+        # Define the regular expression pattern
+        pattern = r"^.+@.+\..+$"
 
+        # Use the re module to check if the string matches the pattern
         if not pycountry.countries.get(name=value):
             raise serializers.ValidationError(f"The country is not a valid one!")
         return value
