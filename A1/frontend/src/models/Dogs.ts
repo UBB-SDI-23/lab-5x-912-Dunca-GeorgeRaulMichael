@@ -1,6 +1,7 @@
 import { DogOwners } from "./DogOwner";
 import { Owners } from "./Owners";
 import { Toys } from "./Toys";
+import { Users } from "./User";
 
 export interface Dogs{
     id?: number;
@@ -13,5 +14,6 @@ export interface Dogs{
     owners?: DogOwners[];
     avg_price?:number;
     nr_of_owners?: number;
-
+    users?: Users;
+    username?: string;
 }

@@ -8,12 +8,13 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import axios from "axios";
 import { Dogs } from "../../models/Dogs";
 import { BACKEND_API_URL } from "../../constants";
+import jwt_decode from 'jwt-decode';
 
 export const DogsAdd = () => {
 	const navigate = useNavigate();
 
-	
-	
+	const token = localStorage.getItem('token');
+	const refresh_token=localStorage.getItem('refres_token');
 	const [dog, setDog] = useState<Dogs>({
 		name: "",
 		breed: "",
@@ -25,14 +26,52 @@ export const DogsAdd = () => {
 	const addDog = async (event: { preventDefault: () => void }) => {
 		event.preventDefault();
 		try {
-			await axios.post(`${BACKEND_API_URL}/dogs/`, dog);
+			const token = localStorage.getItem('token');
+			
+			if(token)
+			{
+			const decoded: any = jwt_decode(token);
+			if (decoded.exp < Date.now() / 1000) {
+				axios.post(`${BACKEND_API_URL}/token/refresh`, { refresh: refresh_token })
+				.then(response => {
+				  const newToken = response.data.access;
+				  console.log(newToken);
+				  localStorage.setItem('token', newToken);
+				  window.location.reload();
+				});
+			}
+			//console.log(decoded);
+			const user_id = decoded['user_id'];
+			const newDog = { ...dog, users: user_id }
+			await axios.post(`${BACKEND_API_URL}/dogs/`, newDog,{
+				headers: {
+				  'Authorization': `Bearer ${token}`
+				}
+			  });
 			navigate("/dogs");
+			}
 		} catch (error) {
 			console.log(error);
 		}
 	};
 
-
+	const handleBtnClick = () => {
+			
+		if (token) {
+		  const decoded: any = jwt_decode(token);
+	
+		  if (decoded.exp < Date.now() / 1000) {
+			  axios.post(`${BACKEND_API_URL}/token/refresh`, { refresh: refresh_token })
+			  .then(response => {
+				const newToken = response.data.access;
+				console.log(newToken);
+				localStorage.setItem('token', newToken);
+				window.location.reload();
+			  });
+		}
+		
+	  }
+  };
 
 	const [DateError, setDateError] = useState('');
 	function handleDateChange(event:any) {
@@ -79,7 +118,7 @@ export const DogsAdd = () => {
 		<Container style={{ height:'100vh',marginTop:'100px'}}>
 			<Card>
 				<CardContent>
-					<IconButton component={Link} sx={{ mr: 3 }} to={`/dogs`}>
+					<IconButton component={Link} sx={{ mr: 3 }} to={`/dogs`} onClick={handleBtnClick}>
 						<ArrowBackIcon />
 					</IconButton>{" "}
 					<form onSubmit={addDog}>

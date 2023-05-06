@@ -12,16 +12,22 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import axios from "axios";
 import { Toys } from "../../models/Toys";
+import jwt_decode from 'jwt-decode';
 
 export const ToysDetails = () => {
 	const { toyId } = useParams();
     const [toy, setToys] = useState<Toys>();
-
+	const token = localStorage.getItem('token');
+	const refresh_token=localStorage.getItem('refres_token');
 
 	useEffect(() => {
 		const fetchToy = async () => {
 			try {
-                const response = await axios.get(`${BACKEND_API_URL}/toys/${toyId}`);
+                const response = await axios.get(`${BACKEND_API_URL}/toys/${toyId}`,{
+					headers: {
+					'Authorization': `Bearer ${token}`
+					}
+				});
                 const toy = response.data;
                 setToys(toy);
              } catch (error) {
@@ -33,14 +39,30 @@ export const ToysDetails = () => {
 
 
    
-
+	const handleBtnClick = () => {
+			
+		if (token) {
+		  const decoded: any = jwt_decode(token);
+	
+		  if (decoded.exp < Date.now() / 1000) {
+			  axios.post(`${BACKEND_API_URL}/token/refresh`, { refresh: refresh_token })
+			  .then(response => {
+				const newToken = response.data.access;
+				console.log(newToken);
+				localStorage.setItem('token', newToken);
+				window.location.reload();
+			  });
+		}
+		
+	  }
+  };
 
 
 	return (
 		<Container style={{ height:'100vh',marginTop:'100px'}}>
 			<Card>
 				<CardContent>
-					<IconButton component={Link} sx={{ mr: 3 }} to={`/toys`}>
+					<IconButton component={Link} sx={{ mr: 3 }} to={`/toys`} onClick={handleBtnClick}>
 						<ArrowBackIcon />
 					</IconButton>{" "}
 					<h1>Toy Details</h1>
@@ -60,11 +82,11 @@ export const ToysDetails = () => {
 					
 				</CardContent>
 				<CardActions>
-					<IconButton component={Link} sx={{ mr: 3 }} to={`/toys/${toyId}/edit`}>
+					<IconButton component={Link} sx={{ mr: 3 }} to={`/toys/${toyId}/edit`} onClick={handleBtnClick}>
 						<EditIcon />
 					</IconButton>
 
-					<IconButton component={Link} sx={{ mr: 3 }} to={`/toys/${toyId}/delete`}>
+					<IconButton component={Link} sx={{ mr: 3 }} to={`/toys/${toyId}/delete`} onClick={handleBtnClick}>
 						<DeleteForeverIcon sx={{ color: "red" }} />
 					</IconButton>
 				</CardActions>

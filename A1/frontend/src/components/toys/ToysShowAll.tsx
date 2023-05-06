@@ -29,6 +29,8 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import { Toys } from "../../models/Toys";
 import { Label } from "@mui/icons-material";
+import jwt_decode from 'jwt-decode';
+import axios from "axios";
 
   export const ToysShowAll = () => {
     const [loading, setLoading] = useState(false);
@@ -37,16 +39,43 @@ import { Label } from "@mui/icons-material";
     const totalPages = Math.ceil(1000000 / 10);
     const [number, setNumber] = useState(1); // Set initial state to 1
     const [InputValue,setInputValue]=useState(0);
-    
+    const token = localStorage.getItem('token');
+    const refresh_token=localStorage.getItem('refres_token');
 
     useEffect(() => {
       setLoading(true);
+      if (token) {
+        const decoded: any = jwt_decode(token);
       
-      fetch(`${BACKEND_API_URL}/toys/?p=${currentPage}&price=${InputValue}`)
+        if (decoded.exp < Date.now() / 1000) {
+          axios.post(`${BACKEND_API_URL}/token/refresh`, { refresh: refresh_token })
+          .then(response => {
+            const newToken = response.data.access;
+            //console.log(newToken);
+            localStorage.setItem('token', newToken);
+            window.location.reload();
+          });
+        }
+        
+      }
+      fetch(`${BACKEND_API_URL}/toys/?p=${currentPage}&price=${InputValue}`,{
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
         .then((response) => response.json())
-        .then((data) => {
-         
-          setToys(data.results);
+        .then(async (data) => {
+          const toysWithUsernames = await Promise.all(data.results.map(async (toy: any) => {
+            const userResponse = await fetch(`${BACKEND_API_URL}/user/details/${toy.users}`, {
+              headers: {
+                'Authorization': `Bearer ${token}`
+              }
+            });
+            const user = await userResponse.json();
+            return { ...toy, username: user.username };
+          }));
+          setToys(toysWithUsernames);
+          
           setLoading(false);
         });
     }, []);
@@ -92,32 +121,105 @@ import { Label } from "@mui/icons-material";
 
     const handleSubmit = (event: { preventDefault: () => void }) => {
       event.preventDefault();
+
+      if (token) {
+        const decoded: any = jwt_decode(token);
+      
+        if (decoded.exp < Date.now() / 1000) {
+          axios.post(`${BACKEND_API_URL}/token/refresh`, { refresh: refresh_token })
+          .then(response => {
+            const newToken = response.data.access;
+            //console.log(newToken);
+            localStorage.setItem('token', newToken);
+            window.location.reload();
+          });
+        }
+        
+      }
       // navigate("/books");
       setLoading(true);
       setCurrentPage(1);
       
-          fetch(`${BACKEND_API_URL}/toys/?p=1&price=${InputValue}`)
-        .then((response) => response.json())
-        .then((data) => {
-          setToys(data.results);
-          
-          
-          setLoading(false);
-        });
-    };
+          fetch(`${BACKEND_API_URL}/toys/?p=1&price=${InputValue}`,{
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          })
+          .then((response) => response.json())
+          .then(async (data) => {
+            const toysWithUsernames = await Promise.all(data.results.map(async (toy: any) => {
+              
+              const userResponse = await fetch(`${BACKEND_API_URL}/user/details/${toy.users}`, {
+                headers: {
+                  'Authorization': `Bearer ${token}`
+                }
+              });
+              const user = await userResponse.json();
+              return { ...toy, username: user.username };
+            }));
+            setToys(toysWithUsernames);
+            setLoading(false);
+          });
+        }
 
     const handlePageChange = (newPage: number) => {
       setCurrentPage(newPage);
-  
+      if (token) {
+        const decoded: any = jwt_decode(token);
+      
+        if (decoded.exp < Date.now() / 1000) {
+          axios.post(`${BACKEND_API_URL}/token/refresh`, { refresh: refresh_token })
+          .then(response => {
+            const newToken = response.data.access;
+            //console.log(newToken);
+            localStorage.setItem('token', newToken);
+            window.location.reload();
+          });
+        }
+        
+      }
       setLoading(true);
-      fetch(`${BACKEND_API_URL}/toys/?p=${newPage}&price=${InputValue}`)
-        .then((response) => response.json())
-        .then((data) => {
-          setToys(data.results);
-          setLoading(false);
-        });
-    };
-  
+      fetch(`${BACKEND_API_URL}/toys/?p=${newPage}&price=${InputValue}`,{
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      .then((response) => response.json())
+      .then(async (data) => {
+        const toysWithUsernames = await Promise.all(data.results.map(async (toy: any) => {
+          
+          const userResponse = await fetch(`${BACKEND_API_URL}/user/details/${toy.users}`, {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+          const user = await userResponse.json();
+          return { ...toy, username: user.username };
+        }));
+        setToys(toysWithUsernames);
+        setLoading(false);
+      });
+    }
+    
+
+    const handleBtnClick = () => {
+			
+		  if (token) {
+			const decoded: any = jwt_decode(token);
+	  
+			if (decoded.exp < Date.now() / 1000) {
+				axios.post(`${BACKEND_API_URL}/token/refresh`, { refresh: refresh_token })
+				.then(response => {
+				  const newToken = response.data.access;
+				  //console.log(newToken);
+				  localStorage.setItem('token', newToken);
+				  window.location.reload();
+				});
+		  }
+		  
+		}
+	};
+
     const pageNumbers = [];
     for (
       let i = Math.max(1, currentPage - 5);
@@ -182,7 +284,7 @@ import { Label } from "@mui/icons-material";
              <ArrowBackIosIcon sx={{ color: "white" }} />
             </Tooltip>
           </IconButton> */}
-          <IconButton  style= {{ marginLeft:'100px',marginRight: '45px' }} component={Link} sx={{ mr: 3 }} to={`/toys/add`}>
+          <IconButton  style= {{ marginLeft:'100px',marginRight: '45px' }} component={Link} sx={{ mr: 3 }} to={`/toys/add`} onClick={handleBtnClick}>
             <Tooltip title="Add a new toys" arrow>
               <AddIcon color="primary" />
             </Tooltip>
@@ -217,6 +319,7 @@ import { Label } from "@mui/icons-material";
                   <TableCell align="center">Price</TableCell>
                   {/* <TableCell align="center">Description</TableCell> */}
                   <TableCell align="center">NrOtherToys</TableCell>
+                  <TableCell align="center">User</TableCell>
                   <TableCell align="center">Operations</TableCell>
                 </TableRow>
               </TableHead>
@@ -227,7 +330,7 @@ import { Label } from "@mui/icons-material";
                       {index + 1}
                     </TableCell>
                     <TableCell component="th" scope="row">
-                      <Link to={`/toys/${toy.id}/details`} title="View toy details">
+                      <Link to={`/toys/${toy.id}/details`} title="View toy details" onClick={handleBtnClick}>
                         {toy.name}
                       </Link>
                     </TableCell>
@@ -237,21 +340,27 @@ import { Label } from "@mui/icons-material";
                     <TableCell align="center">{toy.price}</TableCell>
                     {/* <TableCell align="center">{toy.descriptions}</TableCell> */}
                     <TableCell align="center">{toy.nr_of_toys}</TableCell>
+                    <TableCell align="right">
+                    <Link to={`/user/details/${toy.users}`} title="View user details" onClick={handleBtnClick}>
+                        {toy.username?.toString()}
+                      </Link>
+                      </TableCell>
                     <TableCell align="center">
                       <IconButton
                         component={Link}
                         sx={{ mr: 3 }}
-                        to={`/toys/${toy.id}/details`}>
+                        to={`/toys/${toy.id}/details`}
+                        onClick={handleBtnClick}>
                         <Tooltip title="View toy details" arrow>
                           <ReadMoreIcon color="primary" />
                         </Tooltip>
                       </IconButton>
   
-                      <IconButton component={Link} sx={{ mr: 3 }} to={`/toys/${toy.id}/edit`}>
+                      <IconButton component={Link} sx={{ mr: 3 }} to={`/toys/${toy.id}/edit`} onClick={handleBtnClick}>
                         <EditIcon />
                       </IconButton>
   
-                      <IconButton component={Link} sx={{ mr: 3 }} to={`/toys/${toy.id}/delete`}>
+                      <IconButton component={Link} sx={{ mr: 3 }} to={`/toys/${toy.id}/delete`} onClick={handleBtnClick}>
                         <DeleteForeverIcon sx={{ color: "red" }} />
                       </IconButton>
                     </TableCell>

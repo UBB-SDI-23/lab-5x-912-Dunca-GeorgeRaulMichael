@@ -11,10 +11,13 @@ import { Dogs } from "../../models/Dogs";
 import { Toys } from "../../models/Toys";
 import { Owners } from "../../models/Owners";
 import { DogOwners } from "../../models/DogOwner";
+import jwt_decode from 'jwt-decode';
 
 export const DogOwnerUpdate = () => {
 const navigate = useNavigate();
 const { dogId,ownerId } = useParams();
+const token = localStorage.getItem('token');
+const refresh_token=localStorage.getItem('refres_token');
 
 const myDog: Dogs = {
     name: "Spike",
@@ -43,7 +46,11 @@ useEffect(() => {
    const fetchDogOwners = async () => {
       try {
          
-         const response = await fetch(`${BACKEND_API_URL}/dogowners/${dogId}/${ownerId}`);
+         const response = await fetch(`${BACKEND_API_URL}/dogowners/${dogId}/${ownerId}`,{
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          })
          const dogowner = await response.json();
          setDogOwner(dogowner);
          setDogOwner({
@@ -62,8 +69,26 @@ useEffect(() => {
 
 const updateDogOwner = async (event: { preventDefault: () => void }) => {
    event.preventDefault();
+   if (token) {
+    const decoded: any = jwt_decode(token);
+
+    if (decoded.exp < Date.now() / 1000) {
+        axios.post(`${BACKEND_API_URL}/token/refresh`, { refresh: refresh_token })
+        .then(response => {
+          const newToken = response.data.access;
+          console.log(newToken);
+          localStorage.setItem('token', newToken);
+          window.location.reload();
+        });
+  }
+  
+}
    try {
-   await axios.put(`${BACKEND_API_URL}/dogowners/${dogId}/${ownerId}`, dogowner);
+   await axios.put(`${BACKEND_API_URL}/dogowners/${dogId}/${ownerId}`, dogowner,{
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  })
    navigate("/dogowners");
    } catch (error) {
    console.log(error);
@@ -72,11 +97,29 @@ const updateDogOwner = async (event: { preventDefault: () => void }) => {
 
 const [dogs,setDogs]=useState<Dogs[]>([]);
     const fetchSuggestionsdogs= async(query: string) => {
+        if (token) {
+			const decoded: any = jwt_decode(token);
+	  
+			if (decoded.exp < Date.now() / 1000) {
+				axios.post(`${BACKEND_API_URL}/token/refresh`, { refresh: refresh_token })
+				.then(response => {
+				  const newToken = response.data.access;
+				  console.log(newToken);
+				  localStorage.setItem('token', newToken);
+				  window.location.reload();
+				});
+		  }
+		  
+		}
         try {
             const response=await axios.get<Dogs[]>(
             
                 `${BACKEND_API_URL}/dogs/autocomplete?query=${query}`
-            );
+                ,{
+                    headers: {
+                      'Authorization': `Bearer ${token}`
+                    }
+                  })
             const data= await response.data;
             
             setDogs(data);
@@ -90,11 +133,29 @@ const [dogs,setDogs]=useState<Dogs[]>([]);
 
     const [owners,setOwners]=useState<Owners[]>([]);
     const fetchSuggestionsowners= async(query: string) => {
+        if (token) {
+			const decoded: any = jwt_decode(token);
+	  
+			if (decoded.exp < Date.now() / 1000) {
+				axios.post(`${BACKEND_API_URL}/token/refresh`, { refresh: refresh_token })
+				.then(response => {
+				  const newToken = response.data.access;
+				  console.log(newToken);
+				  localStorage.setItem('token', newToken);
+				  window.location.reload();
+				});
+		  }
+		  
+		}
         try {
             const response=await axios.get<Owners[]>(
             
                 `${BACKEND_API_URL}/owners/autocomplete?query=${query}`
-            );
+                ,{
+                    headers: {
+                      'Authorization': `Bearer ${token}`
+                    }
+                  })
             const data= await response.data;
             setOwners(data);
         } catch (error) {
@@ -142,11 +203,30 @@ const [dogs,setDogs]=useState<Dogs[]>([]);
             debouncedFetchSuggestionsowner(value);
         }
     }
+
+
+    const handleBtnClick = () => {
+			
+        if (token) {
+          const decoded: any = jwt_decode(token);
+    
+          if (decoded.exp < Date.now() / 1000) {
+              axios.post(`${BACKEND_API_URL}/token/refresh`, { refresh: refresh_token })
+              .then(response => {
+                const newToken = response.data.access;
+                console.log(newToken);
+                localStorage.setItem('token', newToken);
+                window.location.reload();
+              });
+        }
+        
+      }
+  };
    return (
       <Container style={{ height:'100vh',marginTop:'100px'}}>
          <Card>
          <CardContent>
-            <IconButton component={Link} sx={{ mr: 3 }} to={`/dogowners/${dogId}/${ownerId}/details`}>
+            <IconButton component={Link} sx={{ mr: 3 }} to={`/dogowners/${dogId}/${ownerId}/details`} onClick={handleBtnClick}>
                <ArrowBackIcon />
             </IconButton>{" "}
             <form onSubmit={updateDogOwner}>

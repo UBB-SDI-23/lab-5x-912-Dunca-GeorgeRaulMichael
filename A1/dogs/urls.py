@@ -19,7 +19,8 @@ from drf_spectacular.views import SpectacularAPIView,SpectacularSwaggerView
 from dogs.views import DogsViews, ToysViews, OwnersViews, DogOwnersViews
 from rest_framework_simplejwt.views import TokenObtainPairView,TokenRefreshView
 
-from dogs.views.UserViews import RegistrationView, UserDetails
+from dogs.views.UserViews import RegistrationView, UserDetails, ConfirmRegistrationView, \
+    CheckUniqueView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -42,7 +43,9 @@ urlpatterns = [
     path('token/refresh',TokenRefreshView.as_view()),
     path('user/register',RegistrationView.as_view()),
     path('user/login',TokenObtainPairView.as_view()),
-    #path('user/details/<int:id>',UserDetails.as_view())
+    path('user/details/<int:id>',UserDetails.as_view()),
+    path('user/register/confirm/<path:confirmation_code>',ConfirmRegistrationView.as_view()),
+    path('check-username/',CheckUniqueView.as_view())
 ]
 
 

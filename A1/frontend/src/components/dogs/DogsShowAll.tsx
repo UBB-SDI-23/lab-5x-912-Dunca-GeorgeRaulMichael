@@ -1,54 +1,3 @@
-/*
-import { useEffect, useState } from 'react'
-import { Dogs } from '../../models/Dogs';
-
-function DogsShowAll () {
-    const [dogs, setDogs] = useState([]);
-
-    useEffect(() =>{
-    fetch('http://127.0.0.1:8000/dogs/')
-      .then(res => res.json())
-      .then((data)=>setDogs(data));
-    },[]);
-    
-    if (dogs.length===0)
-      {
-        return <div>No dogs.</div>
-      }
-
-      
-    return (
-      
-      <div className="App">
-        
-        <h1>Dogs Table</h1>
-        <table>
-            <tr>
-                <th>#</th>
-                <th>Dog name</th>
-                <th>Breed</th>
-                <th>Colour</th>
-                <th>IsHealthy</th>
-                <th>DateOfBirth</th>
-            </tr>
-            {dogs.map((dog:Dogs,index)=>(
-              <tr key={index}>
-                  <td>{index}</td>
-                  <td>{dog.name}</td>
-                  <td>{dog.breed}</td>
-                  <td>{dog.colour}</td>
-                  <td>{dog.is_healthy.toString()}</td>
-                  <td>{dog.date_of_birth.toString()}</td>
-              </tr>
-            ))}
-        </table>
-      </div>
-    );
-  };
-  
-  export default DogsShowAll
-  */
-
 
   import {
     TableContainer,
@@ -79,32 +28,70 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import { Label } from "@mui/icons-material";
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
+import jwt_decode from 'jwt-decode';
+import axios from "axios";
   //export let currentPage = 1;
   export const DogsShowAll = () => {
     const [loading, setLoading] = useState(false);
     const [dogs, setDogs] = useState<Dogs[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
-   
     const totalPages = Math.ceil(1000000 / 10);
-    const [Btn1, setBtn1] = useState(2);
-    const [Btn2, setBtn2] = useState(3);
-    const [Btn3, setBtn3] = useState(4);
-    const [Btn4, setBtn4] = useState(5);
-    const [BtnLast, setBtnLast] = useState(100);
     
+    const token = localStorage.getItem('token');
+    const refresh_token=localStorage.getItem('refres_token');
     useEffect(() => {
       setLoading(true);
+      if (token) {
+        const decoded: any = jwt_decode(token);
       
-      fetch(`${BACKEND_API_URL}/dogs/?p=${currentPage}`)
-        .then((response) => response.json())
-        .then((data) => {
-          setDogs(data.results);
-          
-          setLoading(false);
-        });
-    }, []);
+        if (decoded.exp < Date.now() / 1000) {
+          axios.post(`${BACKEND_API_URL}/token/refresh`, { refresh: refresh_token })
+          .then(response => {
+            const newToken = response.data.access;
+            //console.log(newToken);
+            localStorage.setItem('token', newToken);
+            window.location.reload();
+          });
+        }
+        
+      }
+     
+      fetch(`${BACKEND_API_URL}/dogs/?p=${currentPage}`,{
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      .then((response) => response.json())
+      .then(async (data) => {
+        const dogsWithUsernames = await Promise.all(data.results.map(async (dog: any) => {
+          const userResponse = await fetch(`${BACKEND_API_URL}/user/details/${dog.users}`, {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+          const user = await userResponse.json();
+          return { ...dog, username: user.username };
+        }));
+        setDogs(dogsWithUsernames);
+        
+        setLoading(false);
+      });
+  }, []);
     
     const orderByDateOfBirth = () => {
+      if (token) {
+        const decoded: any = jwt_decode(token);
+      
+        if (decoded.exp < Date.now() / 1000) {
+          axios.post(`${BACKEND_API_URL}/token/refresh`, { refresh: refresh_token })
+          .then(response => {
+            const newToken = response.data.access;
+            //console.log(newToken);
+            localStorage.setItem('token', newToken);
+            window.location.reload();
+          });
+        }
+      }
       const sorted = [...dogs].sort((a, b) => {
         const dateA = new Date(a.date_of_birth).getTime();
         const dateB = new Date(b.date_of_birth).getTime();
@@ -113,50 +100,48 @@ import DropdownButton from 'react-bootstrap/DropdownButton';
       setDogs(sorted);
     }
 
-    const handleNextPage = () => {
-      if (currentPage < totalPages) {
-        
-        setCurrentPage(currentPage + 1);
-        
-        setLoading(true);
-        fetch(`${BACKEND_API_URL}/dogs/?p=${currentPage+1}`)
-        .then((response) => response.json())
-        .then((data) => {
-          setDogs(data.results);
-          setLoading(false);
-        });
-        
-      }
-    };
-  
-    const handlePrevPage = () => {
-      if (currentPage > 1) {
-        
-        setCurrentPage(currentPage - 1);
-        //console.log(currentPage);
-        setLoading(true);
-        fetch(`${BACKEND_API_URL}/dogs/?p=${currentPage-1}`)
-        .then((response) => response.json())
-        .then((data) => {
-          setDogs(data.results);
-          
-          setLoading(false);
-        });
-         
-      }
-    };
+    
 
     const handlePageChange = (newPage: number) => {
       setCurrentPage(newPage);
-  
-      setLoading(true);
-      fetch(`${BACKEND_API_URL}/dogs/?p=${newPage}`)
-        .then((response) => response.json())
-        .then((data) => {
-          setDogs(data.results);
-          setLoading(false);
+      if(token)
+      {
+        
+      const decoded: any = jwt_decode(token);
+      
+      if (decoded.exp < Date.now() / 1000) {
+        //console.log(refresh_token);
+        axios.post(`${BACKEND_API_URL}/token/refresh`,{refresh:refresh_token}).then(response => {
+          const newToken = response.data.access;
+          //console.log(response.data.access);
+          localStorage.setItem('token', newToken);
+          window.location.reload();
         });
-    };
+      }
+      }
+      setLoading(true);
+      fetch(`${BACKEND_API_URL}/dogs/?p=${newPage}`,{
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+        .then((response) => response.json())
+      .then(async (data) => {
+        const dogsWithUsernames = await Promise.all(data.results.map(async (dog: any) => {
+          
+          const userResponse = await fetch(`${BACKEND_API_URL}/user/details/${dog.users}`, {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+          const user = await userResponse.json();
+          return { ...dog, username: user.username };
+        }));
+        setDogs(dogsWithUsernames);
+        
+        setLoading(false);
+      });
+    }
   
     const pageNumbers = [];
     for (
@@ -167,7 +152,23 @@ import DropdownButton from 'react-bootstrap/DropdownButton';
       pageNumbers.push(i);
     }
 
-
+    const handleBtnClick = () => {
+			
+		  if (token) {
+			const decoded: any = jwt_decode(token);
+	  
+			if (decoded.exp < Date.now() / 1000) {
+				axios.post(`${BACKEND_API_URL}/token/refresh`, { refresh: refresh_token })
+				.then(response => {
+				  const newToken = response.data.access;
+				  //console.log(newToken);
+				  localStorage.setItem('token', newToken);
+				  window.location.reload();
+				});
+		  }
+		  
+		}
+	};
 
     const [open, setOpen] = React.useState(false);
     const numbers = Array.from({length: 100}, (_, index) => index + 1);
@@ -227,7 +228,7 @@ import DropdownButton from 'react-bootstrap/DropdownButton';
             )}
           </div>
           <div style={{ marginLeft:"20px",width:"400px"}}>
-          <IconButton component={Link} sx={{ mr: 3 }} to={`/dogs/add`}>
+          <IconButton component={Link} sx={{ mr: 3 }} to={`/dogs/add`} onClick={handleBtnClick}>
             <Tooltip title="Add a new dog" arrow>
               <AddIcon color="primary" />
             </Tooltip>
@@ -309,6 +310,7 @@ import DropdownButton from 'react-bootstrap/DropdownButton';
                   <TableCell align="right">IsHealthy</TableCell>
                   <TableCell align="right">DateOfBirth</TableCell>
                   <TableCell align="right">NrOfOwners</TableCell>
+                  <TableCell align="center">User</TableCell>
                   <TableCell align="center">Operations</TableCell>
                 </TableRow>
               </TableHead>
@@ -319,7 +321,7 @@ import DropdownButton from 'react-bootstrap/DropdownButton';
                       {index + 1}
                     </TableCell>
                     <TableCell component="th" scope="row">
-                      <Link to={`/dogs/${dog.id}/details`} title="View dog details">
+                      <Link to={`/dogs/${dog.id}/details`} title="View dog details" onClick={handleBtnClick}>
                         {dog.name}
                       </Link>
                     </TableCell>
@@ -329,20 +331,27 @@ import DropdownButton from 'react-bootstrap/DropdownButton';
                     <TableCell align="right">{dog.date_of_birth}</TableCell>
                     <TableCell align="right">{dog.nr_of_owners}</TableCell>
                     <TableCell align="right">
+                    <Link to={`/user/details/${dog.users}`} title="View user details" onClick={handleBtnClick}>
+                        {dog.username?.toString()}
+                      </Link>
+                      </TableCell>
+                    <TableCell align="right">
                       <IconButton
                         component={Link}
                         sx={{ mr: 3 }}
-                        to={`/dogs/${dog.id}/details`}>
+                        to={`/dogs/${dog.id}/details`}
+                        onClick={handleBtnClick}>
+                          
                         <Tooltip title="View dog details" arrow>
                           <ReadMoreIcon color="primary" />
                         </Tooltip>
                       </IconButton>
   
-                      <IconButton component={Link} sx={{ mr: 3 }} to={`/dogs/${dog.id}/edit`}>
+                      <IconButton component={Link} sx={{ mr: 3 }} to={`/dogs/${dog.id}/edit`} onClick={handleBtnClick}>
                         <EditIcon />
                       </IconButton>
   
-                      <IconButton component={Link} sx={{ mr: 3 }} to={`/dogs/${dog.id}/delete`}>
+                      <IconButton component={Link} sx={{ mr: 3 }} to={`/dogs/${dog.id}/delete`} onClick={handleBtnClick}>
                         <DeleteForeverIcon sx={{ color: "red" }} />
                       </IconButton>
                     </TableCell>

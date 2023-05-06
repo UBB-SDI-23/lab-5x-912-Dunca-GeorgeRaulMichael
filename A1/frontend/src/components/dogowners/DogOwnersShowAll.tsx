@@ -25,67 +25,93 @@ import { BACKEND_API_URL } from "../../constants";
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import { DogOwners } from "../../models/DogOwner";
+import jwt_decode from 'jwt-decode';
+import axios from "axios";
 
   export const DogOwnersShowAll = () => {
     const [loading, setLoading] = useState(false);
     const [dogowners, setDogOwners] = useState<DogOwners[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const totalPages = Math.ceil(10000000 / 10);
+    const token = localStorage.getItem('token');
+    const refresh_token=localStorage.getItem('refres_token');
 
     useEffect(() => {
       setLoading(true);
-      console.log(currentPage);
-      fetch(`${BACKEND_API_URL}/dogowners/?p=${currentPage}`)
+      if (token) {
+        const decoded: any = jwt_decode(token);
+      
+        if (decoded.exp < Date.now() / 1000) {
+          axios.post(`${BACKEND_API_URL}/token/refresh`, { refresh: refresh_token })
+          .then(response => {
+            const newToken = response.data.access;
+            //console.log(newToken);
+            localStorage.setItem('token', newToken);
+            window.location.reload();
+          });
+        }
+        
+      }
+      //console.log(currentPage);
+      fetch(`${BACKEND_API_URL}/dogowners/?p=${currentPage}`,{
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
         .then((response) => response.json())
-        .then((data) => {
-            setDogOwners(data.results);
-          console.log(data.results);
-          setLoading(false);
-        });
+        .then(async (data) => {
+        const dogownersWithUsernames = await Promise.all(data.results.map(async (dogowner: any) => {
+          const userResponse = await fetch(`${BACKEND_API_URL}/user/details/${dogowner.users}`, {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+          const user = await userResponse.json();
+          return { ...dogowner, username: user.username };
+        }));
+        setDogOwners(dogownersWithUsernames);
+        setLoading(false);
+      });
     }, []);
     
 
-    const handleNextPage = () => {
-      if (currentPage < totalPages) {
-        
-        setCurrentPage(currentPage + 1);
-        console.log(currentPage);
-        setLoading(true);
-        fetch(`${BACKEND_API_URL}/dogowners/?p=${currentPage+1}`)
-        .then((response) => response.json())
-        .then((data) => {
-          setDogOwners(data.results);
-          setLoading(false);
-        });
-        
-      }
-    };
-  
-    const handlePrevPage = () => {
-      if (currentPage > 1) {
-        
-        setCurrentPage(currentPage - 1);
-        console.log(currentPage);
-        setLoading(true);
-        fetch(`${BACKEND_API_URL}/dogowners/?p=${currentPage-1}`)
-        .then((response) => response.json())
-        .then((data) => {
-          setDogOwners(data.results);
-          setLoading(false);
-        });
-         
-      }
-    };
+   
 
 
     const handlePageChange = (newPage: number) => {
       setCurrentPage(newPage);
-  
+      if (token) {
+        const decoded: any = jwt_decode(token);
+      
+        if (decoded.exp < Date.now() / 1000) {
+          axios.post(`${BACKEND_API_URL}/token/refresh`, { refresh: refresh_token })
+          .then(response => {
+            const newToken = response.data.access;
+            //console.log(newToken);
+            localStorage.setItem('token', newToken);
+            window.location.reload();
+          });
+        }
+        
+      }
       setLoading(true);
-      fetch(`${BACKEND_API_URL}/dogowners/?p=${newPage}`)
+      fetch(`${BACKEND_API_URL}/dogowners/?p=${newPage}`,{
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
         .then((response) => response.json())
-        .then((data) => {
-          setDogOwners(data.results);
+        .then(async (data) => {
+          const dogownersWithUsernames = await Promise.all(data.results.map(async (dogowner: any) => {
+            const userResponse = await fetch(`${BACKEND_API_URL}/user/details/${dogowner.users}`, {
+              headers: {
+                'Authorization': `Bearer ${token}`
+              }
+            });
+            const user = await userResponse.json();
+            return { ...dogowner, username: user.username };
+          }));
+          setDogOwners(dogownersWithUsernames);
           setLoading(false);
         });
     };
@@ -99,6 +125,24 @@ import { DogOwners } from "../../models/DogOwner";
       pageNumbers.push(i);
     }
 
+
+    const handleBtnClick = () => {
+			
+		  if (token) {
+			const decoded: any = jwt_decode(token);
+	  
+			if (decoded.exp < Date.now() / 1000) {
+				axios.post(`${BACKEND_API_URL}/token/refresh`, { refresh: refresh_token })
+				.then(response => {
+				  const newToken = response.data.access;
+				  //console.log(newToken);
+				  localStorage.setItem('token', newToken);
+				  window.location.reload();
+				});
+		  }
+		  
+		}
+	};
     return (
       <Container style={{ height:'120vh'}}>
         <h1 style={{ color:'white'}}>All dogowners</h1>
@@ -153,7 +197,7 @@ import { DogOwners } from "../../models/DogOwner";
              <ArrowBackIosIcon sx={{ color: "white" }} />
             </Tooltip>
           </IconButton> */}
-          <IconButton component={Link} sx={{ marginRight:'65px',marginLeft:'300px'  }} to={`/dogowners/add`}>
+          <IconButton component={Link} sx={{ marginRight:'65px',marginLeft:'300px'  }} to={`/dogowners/add`} onClick={handleBtnClick}>
             <Tooltip title="Add a new dogowner" arrow>
               <AddIcon color="primary" />
             </Tooltip>
@@ -175,6 +219,7 @@ import { DogOwners } from "../../models/DogOwner";
                   <TableCell align="left">Owner</TableCell>
                   <TableCell align="right">Adoption Date</TableCell>
                   <TableCell align="right">Adoption Fee</TableCell>
+                  <TableCell align="center">User</TableCell>
                   <TableCell align="center">Operations</TableCell>
                 </TableRow>
               </TableHead>
@@ -185,32 +230,38 @@ import { DogOwners } from "../../models/DogOwner";
                       {index + 1}
                     </TableCell>
                     <TableCell component="th" scope="row">
-                      <Link to={`/dogs/${dogowner.dog}/details`} title="View dog details">
+                      <Link to={`/dogs/${dogowner.dog}/details`} title="View dog details" onClick={handleBtnClick}>
                         {dogowner.dog.toString()}
                       </Link>
                     </TableCell>
                     <TableCell component="th" scope="row">
-                      <Link to={`/owners/${dogowner.owner}/details`} title="View owner details">
+                      <Link to={`/owners/${dogowner.owner}/details`} title="View owner details" onClick={handleBtnClick}>
                         {dogowner.owner.toString()}
                       </Link>
                     </TableCell>
                     <TableCell align="right">{dogowner.adoption_date.toString()}</TableCell>
                     <TableCell align="right">{dogowner.adoption_fee}</TableCell>
+                    <TableCell align="center">
+                    <Link to={`/user/details/${dogowner.users}`} title="View user details" onClick={handleBtnClick}>
+                        {dogowner.username?.toString()}
+                      </Link>
+                      </TableCell>
                     <TableCell align="right">
                       <IconButton
                         component={Link}
                         sx={{ mr: 3 }}
-                        to={`/dogowners/${dogowner.dog}/${dogowner.owner}/details`}>
+                        to={`/dogowners/${dogowner.dog}/${dogowner.owner}/details`}
+                        onClick={handleBtnClick}>
                         <Tooltip title="View dogowner details" arrow>
                           <ReadMoreIcon color="primary" />
                         </Tooltip>
                       </IconButton>
   
-                      <IconButton component={Link} sx={{ mr: 3 }} to={`/dogowners/${dogowner.dog}/${dogowner.owner}/edit`}>
+                      <IconButton component={Link} sx={{ mr: 3 }} to={`/dogowners/${dogowner.dog}/${dogowner.owner}/edit`} onClick={handleBtnClick}>
                         <EditIcon />
                       </IconButton>
   
-                      <IconButton component={Link} sx={{ mr: 3 }} to={`/dogowners/${dogowner.dog}/${dogowner.owner}/delete`}>
+                      <IconButton component={Link} sx={{ mr: 3 }} to={`/dogowners/${dogowner.dog}/${dogowner.owner}/delete`} onClick={handleBtnClick}>
                         <DeleteForeverIcon sx={{ color: "red" }} />
                       </IconButton>
                     </TableCell>

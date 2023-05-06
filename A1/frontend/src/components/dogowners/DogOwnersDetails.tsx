@@ -2,7 +2,7 @@ import { Card, CardActions, CardContent, IconButton, Toolbar, Tooltip } from "@m
 import { Container } from "@mui/system";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-
+import jwt_decode from 'jwt-decode';
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -16,13 +16,18 @@ import { DogOwners } from "../../models/DogOwner";
 export const DogOwnersDetails = () => {
 	const { dogId,ownerId } = useParams();
     const [dogowner, setDogOwners] = useState<DogOwners>();
-
+	const token = localStorage.getItem('token');
+	const refresh_token=localStorage.getItem('refres_token');
 
 	useEffect(() => {
 		const fetchDogOwner = async () => {
 			try {
                 
-                const response = await axios.get(`${BACKEND_API_URL}/dogowners/${dogId}/${ownerId}`);
+                const response = await axios.get(`${BACKEND_API_URL}/dogowners/${dogId}/${ownerId}`,{
+					headers: {
+					  'Authorization': `Bearer ${token}`
+					}
+				  })
                 const dogowner = response.data;
                 setDogOwners(dogowner);
              } catch (error) {
@@ -32,13 +37,29 @@ export const DogOwnersDetails = () => {
 		fetchDogOwner();
 	}, [dogId,ownerId]);
 
-
+	const handleBtnClick = () => {
+			
+		if (token) {
+		  const decoded: any = jwt_decode(token);
+	
+		  if (decoded.exp < Date.now() / 1000) {
+			  axios.post(`${BACKEND_API_URL}/token/refresh`, { refresh: refresh_token })
+			  .then(response => {
+				const newToken = response.data.access;
+				console.log(newToken);
+				localStorage.setItem('token', newToken);
+				window.location.reload();
+			  });
+		}
+		
+	  }
+  };
 
 	return (
 		<Container style={{ height:'100vh',marginTop:'100px'}}>
 			<Card>
 				<CardContent>
-					<IconButton component={Link} sx={{ mr: 3 }} to={`/dogowners`}>
+					<IconButton component={Link} sx={{ mr: 3 }} to={`/dogowners`} onClick={handleBtnClick}>
 						<ArrowBackIcon />
 					</IconButton>{" "}
 					<h1>DogOwner Details</h1>
@@ -55,11 +76,11 @@ export const DogOwnersDetails = () => {
 					
 				</CardContent>
 				<CardActions>
-					<IconButton component={Link} sx={{ mr: 3 }} to={`/dogowners/${dogId}/${ownerId}/edit`}>
+					<IconButton component={Link} sx={{ mr: 3 }} to={`/dogowners/${dogId}/${ownerId}/edit`} onClick={handleBtnClick}>
 						<EditIcon />
 					</IconButton>
 
-					<IconButton component={Link} sx={{ mr: 3 }} to={`/dogowners/${dogId}/${ownerId}/delete`}>
+					<IconButton component={Link} sx={{ mr: 3 }} to={`/dogowners/${dogId}/${ownerId}/delete`} onClick={handleBtnClick}>
 						<DeleteForeverIcon sx={{ color: "red" }} />
 					</IconButton>
 				</CardActions>
