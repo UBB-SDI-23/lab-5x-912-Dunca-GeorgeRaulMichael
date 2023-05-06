@@ -1,4 +1,5 @@
 import { Dogs } from "./Dogs";
+import { Users } from "./User";
 
 export interface Toys
 {
@@ -10,5 +11,6 @@ export interface Toys
     price: number;
     descriptions: string;
     nr_of_toys?: number;
-    
+    users?: Users;
+    username?: string;
 }

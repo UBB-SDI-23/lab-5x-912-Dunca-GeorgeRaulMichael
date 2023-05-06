@@ -9,9 +9,12 @@ import axios from "axios";
 import { Dogs } from "../../models/Dogs";
 import { BACKEND_API_URL } from "../../constants";
 import { Owners } from "../../models/Owners";
+import jwt_decode from 'jwt-decode';
 
 export const OwnersAdd = () => {
 	const navigate = useNavigate();
+	const token = localStorage.getItem('token');
+	const refresh_token=localStorage.getItem('refres_token');
 
 	const [owner, setOwner] = useState<Owners>({
 		first_name: "",
@@ -24,8 +27,29 @@ export const OwnersAdd = () => {
 	const addOwner = async (event: { preventDefault: () => void }) => {
 		event.preventDefault();
 		try {
-			await axios.post(`${BACKEND_API_URL}/owners/`, owner);
+			const token = localStorage.getItem('token');
+			if(token)
+			{
+			const decoded: any = jwt_decode(token);
+			if (decoded.exp < Date.now() / 1000) {
+				//console.log(refresh_token);
+				axios.post(`${BACKEND_API_URL}/token/refresh`,{refresh:refresh_token}).then(response => {
+				const newToken = response.data.access;
+				//console.log(response.data.access);
+				localStorage.setItem('token', newToken);
+				window.location.reload();
+				});
+			}
+			//console.log(decoded);
+			const user_id = decoded['user_id'];
+			const newOwner = { ...owner, users: user_id }
+			await axios.post(`${BACKEND_API_URL}/owners/`, newOwner,{
+				headers: {
+				  'Authorization': `Bearer ${token}`
+				}
+			  })
 			navigate("/owners");
+			}
 		} catch (error) {
 			console.log(error);
 		}
@@ -71,11 +95,30 @@ export const OwnersAdd = () => {
 		}
 	}
 
+
+	const handleBtnClick = () => {
+			
+		if (token) {
+		  const decoded: any = jwt_decode(token);
+	
+		  if (decoded.exp < Date.now() / 1000) {
+			  axios.post(`${BACKEND_API_URL}/token/refresh`, { refresh: refresh_token })
+			  .then(response => {
+				const newToken = response.data.access;
+				console.log(newToken);
+				localStorage.setItem('token', newToken);
+				window.location.reload();
+			  });
+		}
+		
+	  }
+  };
+
 	return (
 		<Container style={{ height:'100vh',marginTop:'100px'}}>
 			<Card>
 				<CardContent>
-					<IconButton component={Link} sx={{ mr: 3 }} to={`/owners`}>
+					<IconButton component={Link} sx={{ mr: 3 }} to={`/owners`} onClick={handleBtnClick}>
 						<ArrowBackIcon />
 					</IconButton>{" "}
 					<form onSubmit={addOwner}>

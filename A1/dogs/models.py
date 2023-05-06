@@ -7,7 +7,7 @@ from django.contrib.auth.base_user import BaseUserManager, AbstractBaseUser
 from django.utils import timezone
 
 class Dog(models.Model):
-    users = models.ForeignKey(User, on_delete=models.CASCADE,default=None,null=True)
+    users = models.ForeignKey(User, on_delete=models.CASCADE,default=None,null=True,related_name='dogs_user')
     name=models.CharField(max_length=50)
     breed=models.CharField(max_length=100)
     colour= models.CharField(max_length=50)
@@ -20,7 +20,7 @@ class Dog(models.Model):
         return f"{self.name} {self.breed}"
 
 class Toy(models.Model):
-    users = models.ForeignKey(User, on_delete=models.CASCADE,default=None,null=True)
+    users = models.ForeignKey(User, on_delete=models.CASCADE,default=None,null=True,related_name='toys_user')
     name=models.CharField(max_length=50)
     material=models.CharField(max_length=100)
     colour= models.CharField(max_length=50)
@@ -31,7 +31,7 @@ class Toy(models.Model):
         return f"{self.name}"
 
 class Owner(models.Model):
-    users = models.ForeignKey(User, on_delete=models.CASCADE,default=None,null=True)
+    users = models.ForeignKey(User, on_delete=models.CASCADE,default=None,null=True,related_name='owners_user')
     first_name=models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     email=models.CharField(max_length=50)
@@ -42,7 +42,7 @@ class Owner(models.Model):
         return f"{self.first_name}"
 
 class DogOwner(models.Model):
-    users = models.ForeignKey(User, on_delete=models.CASCADE,default=None,null=True)
+    users = models.ForeignKey(User, on_delete=models.CASCADE,default=None,null=True,related_name='dogowners_user')
     dog=models.ForeignKey(Dog,on_delete=models.CASCADE,related_name='owners')
     owner=models.ForeignKey(Owner,on_delete=models.CASCADE,related_name='dogs')
     adoption_date=models.DateField()

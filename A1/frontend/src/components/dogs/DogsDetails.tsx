@@ -12,16 +12,23 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import axios from "axios";
 //import { currentPage } from './DogsShowAll';
+import jwt_decode from 'jwt-decode';
 
 export const DogsDetails = () => {
 	const { dogId } = useParams();
     const [dog, setDogs] = useState<Dogs>();
 	
-	
+	const token = localStorage.getItem('token');
+	const refresh_token = localStorage.getItem('refres_token');
 	useEffect(() => {
 		const fetchDog = async () => {
 			try {
-                const response = await axios.get(`${BACKEND_API_URL}/dogs/${dogId}`);
+                const response = await axios.get(`${BACKEND_API_URL}/dogs/${dogId}`,{
+					headers: {
+					'Authorization': `Bearer ${token}`
+					}
+				});
+				
                 const dog = response.data;
                 setDogs(dog);
              } catch (error) {
@@ -31,13 +38,29 @@ export const DogsDetails = () => {
 		fetchDog();
 	}, [dogId]);
 
-
+	const handleBtnClick = () => {
+			
+		if (token) {
+		  const decoded: any = jwt_decode(token);
+	
+		  if (decoded.exp < Date.now() / 1000) {
+			  axios.post(`${BACKEND_API_URL}/token/refresh`, { refresh: refresh_token })
+			  .then(response => {
+				const newToken = response.data.access;
+				console.log(newToken);
+				localStorage.setItem('token', newToken);
+				window.location.reload();
+			  });
+		}
+		
+	  }
+  };
 
 	return (
 		<Container style={{ height:'100vh',marginTop:'100px'}}>
 			<Card>
 				<CardContent>
-					<IconButton component={Link} sx={{ mr: 3 }} to={`/dogs/`}>
+					<IconButton component={Link} sx={{ mr: 3 }} to={`/dogs/`} onClick={handleBtnClick}>
 						<ArrowBackIcon />
 					</IconButton>{" "}
 					<h1>Dogs Details</h1>
@@ -61,11 +84,11 @@ export const DogsDetails = () => {
 					
 				</CardContent>
 				<CardActions>
-					<IconButton component={Link} sx={{ mr: 3 }} to={`/dogs/${dogId}/edit`}>
+					<IconButton component={Link} sx={{ mr: 3 }} to={`/dogs/${dogId}/edit`} onClick={handleBtnClick}>
 						<EditIcon />
 					</IconButton>
 
-					<IconButton component={Link} sx={{ mr: 3 }} to={`/dogs/${dogId}/delete`}>
+					<IconButton component={Link} sx={{ mr: 3 }} to={`/dogs/${dogId}/delete`} onClick={handleBtnClick}>
 						<DeleteForeverIcon sx={{ color: "red" }} />
 					</IconButton>
 				</CardActions>

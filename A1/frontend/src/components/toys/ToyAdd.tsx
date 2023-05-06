@@ -9,10 +9,14 @@ import axios from "axios";
 import { Dogs } from "../../models/Dogs";
 import { BACKEND_API_URL } from "../../constants";
 import { Toys } from "../../models/Toys";
+import jwt_decode from 'jwt-decode';
 
 
 export const ToysAdd = () => {
 	const navigate = useNavigate();
+	const token = localStorage.getItem('token');
+	const refresh_token=localStorage.getItem('refres_token');
+
     const myDog: Dogs = {
         name: "Spike",
         breed: "Labrador",
@@ -31,9 +35,38 @@ export const ToysAdd = () => {
 
 	const addToy = async (event: { preventDefault: () => void }) => {
 		event.preventDefault();
+		if(token)
+		{
+			
+		const decoded: any = jwt_decode(token);
+		
+		if (decoded.exp < Date.now() / 1000) {
+			//console.log(refresh_token);
+			axios.post(`${BACKEND_API_URL}/token/refresh`,{refresh:refresh_token}).then(response => {
+			const newToken = response.data.access;
+			//console.log(response.data.access);
+			localStorage.setItem('token', newToken);
+			window.location.reload();
+			});
+		}
+		}
+
 		try {
-			await axios.post(`${BACKEND_API_URL}/toys/`, toy);
+			const token = localStorage.getItem('token');
+			
+			if(token)
+			{
+			const decoded: any = jwt_decode(token);
+			console.log(decoded);
+			const user_id = decoded['user_id'];
+			const newToy = { ...toy, users: user_id }
+			await axios.post(`${BACKEND_API_URL}/toys/`, newToy,{
+				headers: {
+				'Authorization': `Bearer ${token}`
+				}
+			});
 			navigate("/toys");
+		}
 		} catch (error) {
 			console.log(error);
 		}
@@ -41,11 +74,30 @@ export const ToysAdd = () => {
 
     const [dogs,setDogs]=useState<Dogs[]>([]);
     const fetchSuggestions= async(query: string) => {
+		if(token)
+      {
+        
+      const decoded: any = jwt_decode(token);
+      
+      if (decoded.exp < Date.now() / 1000) {
+        //console.log(refresh_token);
+        axios.post(`${BACKEND_API_URL}/token/refresh`,{refresh:refresh_token}).then(response => {
+          const newToken = response.data.access;
+          //console.log(response.data.access);
+          localStorage.setItem('token', newToken);
+          window.location.reload();
+        });
+      }
+      }
         try {
             const response=await axios.get<Dogs[]>(
             
                 `${BACKEND_API_URL}/dogs/autocomplete?query=${query}`
-            );
+				,{
+					headers: {
+					'Authorization': `Bearer ${token}`
+					}
+				});
             const data= await response.data;
             setDogs(data);
         } catch (error) {
@@ -95,11 +147,31 @@ export const ToysAdd = () => {
 		setToy({ ...toy, price: input });
 	}
 	  }
+
+
+	  const handleBtnClick = () => {
+			
+		if (token) {
+		  const decoded: any = jwt_decode(token);
+	
+		  if (decoded.exp < Date.now() / 1000) {
+			  axios.post(`${BACKEND_API_URL}/token/refresh`, { refresh: refresh_token })
+			  .then(response => {
+				const newToken = response.data.access;
+				console.log(newToken);
+				localStorage.setItem('token', newToken);
+				window.location.reload();
+			  });
+		}
+		
+	  }
+  };
+
 	return (
 		<Container style={{ height:'100vh',marginTop:'100px'}}>
 			<Card>
 				<CardContent>
-					<IconButton component={Link} sx={{ mr: 3 }} to={`/toys`}>
+					<IconButton component={Link} sx={{ mr: 3 }} to={`/toys`} onClick={handleBtnClick}>
 						<ArrowBackIcon />
 					</IconButton>{" "}
 					<form onSubmit={addToy}>

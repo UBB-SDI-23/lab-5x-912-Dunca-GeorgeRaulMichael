@@ -22,15 +22,22 @@ import { BACKEND_API_URL } from "../../constants";
 import { Dogs } from "../../models/Dogs";
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import axios from "axios";
+import jwt_decode from 'jwt-decode';
 
 export const DogsStats= () => {
     const[loading, setLoading] = useState(true)
     const [dogs, setDogs] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const totalPages = Math.ceil(1000000 / 10);
-
+    const token = localStorage.getItem('token');
+    const refresh_token=localStorage.getItem('refres_token');
     useEffect(() => {
-    fetch(`${BACKEND_API_URL}/dogs/nr-of-owners?p=${currentPage}`)
+    fetch(`${BACKEND_API_URL}/dogs/nr-of-owners?p=${currentPage}`,{
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
       .then((response) => response.json())
       .then((data) => {
         setDogs(data.results);
@@ -39,44 +46,32 @@ export const DogsStats= () => {
     });
     }, []);
 
-    const handleNextPage = () => {
-        if (currentPage < totalPages) {
-          
-          setCurrentPage(currentPage + 1);
-          
-          setLoading(true);
-          fetch(`${BACKEND_API_URL}/dogs/nr-of-owners?p=${currentPage+1}`)
-          .then((response) => response.json())
-          .then((data) => {
-            setDogs(data.results);
-            setLoading(false);
-          });
-          
-        }
-      };
-    
-      const handlePrevPage = () => {
-        if (currentPage > 1) {
-          
-          setCurrentPage(currentPage - 1);
-          
-          setLoading(true);
-          fetch(`${BACKEND_API_URL}/dogs/nr-of-owners?p=${currentPage-1}`)
-          .then((response) => response.json())
-          .then((data) => {
-            setDogs(data.results);
-            setLoading(false);
-          });
-           
-        }
-      };
+
       
 
       const handlePageChange = (newPage: number) => {
         setCurrentPage(newPage);
-    
+        if(token)
+        {
+          
+        const decoded: any = jwt_decode(token);
+        
+        if (decoded.exp < Date.now() / 1000) {
+          //console.log(refresh_token);
+          axios.post(`${BACKEND_API_URL}/token/refresh`,{refresh:refresh_token}).then(response => {
+            const newToken = response.data.access;
+            //console.log(response.data.access);
+            localStorage.setItem('token', newToken);
+            window.location.reload();
+          });
+        }
+        }
         setLoading(true);
-        fetch(`${BACKEND_API_URL}/dogs/nr-of-owners?p=${newPage}`)
+        fetch(`${BACKEND_API_URL}/dogs/nr-of-owners?p=${newPage}`,{
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
           .then((response) => response.json())
           .then((data) => {
             setDogs(data.results);

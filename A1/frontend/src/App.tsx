@@ -27,6 +27,10 @@ import { DogOwnersAdd } from './components/dogowners/DogOwnersAdd';
 import { DogOwnerUpdate } from './components/dogowners/DogOwnersUpdate';
 import { DogOwnersDelete } from './components/dogowners/DogOwnersDelete';
 import { DogsStats } from './components/dogs/DogsStats2';
+import { LoginForm } from './components/login';
+import { ActivateAccount } from './components/activate';
+import { RegisterForm } from './components/register';
+import { UserDetails } from './components/UserDetails';
 
 function App() {
   const [count, setCount] = useState(0)
@@ -56,6 +60,10 @@ function App() {
 			<Router>
         <AppMenu />
 				<Routes>
+        <Route path="/register" element={<RegisterForm />} />
+        <Route path="/login" element={<LoginForm />} />
+        <Route path="/activate/:confirmation_code" element={<ActivateAccount />} />
+        <Route path="/user/details/:userId" element={<UserDetails />} />
 					<Route path="/" element={<Home />} />
           <Route path="/dogs" element={<DogsShowAll />} />
           <Route path="/dogs/:dogId/details" element={<DogsDetails />} />

@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.http import Http404
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
@@ -7,8 +8,8 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.db.models import Avg, Count
-from dogs.models import Owner, UserProfile
-from dogs.serializers import UserRegistationSerializer, UserProfileSerializer
+from dogs.models import Owner, UserProfile, Dog, Toy, DogOwner
+from dogs.serializers import UserRegistationSerializer, UserProfileSerializer, CheckUserSerializer
 
 
 class RegistrationView(APIView):
@@ -18,7 +19,7 @@ class RegistrationView(APIView):
         serializer = UserRegistationSerializer(data=request.data)
         if serializer.is_valid():
             user=serializer.save()
-            UserProfile.objects.create(user_id=user.id,confirmation_code=user.confirmation_code,code_expires_at=user.code_expires_at)
+
             return Response({"Message": "User created successfully",
                 "User": serializer.data,
                 "Confirmation Code": user.confirmation_code}, status=status.HTTP_201_CREATED)
@@ -29,23 +30,32 @@ class RegistrationView(APIView):
 class UserDetails(APIView):
     def get_object(self, id):
         try:
-            return  UserProfile.objects.get(user_id=id)
+            return User.objects.get(id=id)
         except UserProfile.DoesNotExist:
             raise Http404
     @extend_schema(request=None, responses=UserProfileSerializer)
     def get(self, request,id):
         user = self.get_object(id)
-        serializer = UserProfileSerializer(user)
-        return Response(serializer.data)
+        user_profile=UserProfile.objects.get(user_id=user.id)
+        dogs_count = Dog.objects.filter(users_id=id).count()
+        owners_count = Owner.objects.filter(users_id=id).count()
+        toys_count=Toy.objects.filter(users_id=id).count()
+        dogowners_count=DogOwner.objects.filter(users_id=id).count()
+        user_profile.nr_of_dogs=dogs_count
+        user_profile.nr_of_owners = owners_count
+        user_profile.nr_of_toys = toys_count
+        user_profile.nr_of_dogowners = dogowners_count
+        serializer = UserProfileSerializer(user_profile)
+        return Response(serializer.data )
 
-    @extend_schema(request=None, responses=UserProfileSerializer)
-    def put(self, request, id):
-        user = self.get_object(id)
-        serializer = UserProfileSerializer(user, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    # @extend_schema(request=None, responses=UserProfileSerializer)
+    # def put(self, request, id):
+    #     user = self.get_object(id)
+    #     serializer = UserProfileSerializer(user, data=request.data)
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #         return Response(serializer.data)
+    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ConfirmRegistrationView(APIView):
@@ -70,6 +80,23 @@ class ConfirmRegistrationView(APIView):
         except ValueError as e:
             print(e)
 
-
         return Response({"Message": "Account activated !"}, status=status.HTTP_200_OK)
+
+
+class CheckUniqueView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = CheckUserSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        # Check if the username already exists
+        username = serializer.validated_data['username']
+        if User.objects.filter(username=username).exists():
+            return Response({"message": "Username already exists"})
+
+        # If the username is unique, return success response
+        return Response({"message": "Username is unique"})
+
+
 

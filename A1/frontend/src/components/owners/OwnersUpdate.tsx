@@ -9,10 +9,13 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import axios from "axios";
 import { Dogs } from "../../models/Dogs";
 import { Owners } from "../../models/Owners";
+import jwt_decode from 'jwt-decode';
 
 export const OwnersUpdate = () => {
 const navigate = useNavigate();
 const { ownerId } = useParams();
+const token = localStorage.getItem('token');
+const refresh_token=localStorage.getItem('refres_token');
 
 const [owner, setOwner] = useState<Owners>({
     first_name: "",
@@ -26,7 +29,11 @@ useEffect(() => {
    const fetchOwners = async () => {
       try {
          
-         const response = await fetch(`${BACKEND_API_URL}/owners/${ownerId}`);
+         const response = await fetch(`${BACKEND_API_URL}/owners/${ownerId}`,{
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          })
          const owner = await response.json();
          setOwner(owner);
          console.log(owner);
@@ -39,8 +46,26 @@ useEffect(() => {
 
 const updateOwner = async (event: { preventDefault: () => void }) => {
    event.preventDefault();
+   if (token) {
+      const decoded: any = jwt_decode(token);
+  
+      if (decoded.exp < Date.now() / 1000) {
+         axios.post(`${BACKEND_API_URL}/token/refresh`, { refresh: refresh_token })
+         .then(response => {
+           const newToken = response.data.access;
+           console.log(newToken);
+           localStorage.setItem('token', newToken);
+           window.location.reload();
+         });
+     }
+     
+   }
    try {
-   await axios.put(`${BACKEND_API_URL}/owners/${ownerId}`, owner);
+   await axios.put(`${BACKEND_API_URL}/owners/${ownerId}`, owner,{
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
    navigate("/owners");
    } catch (error) {
    console.log(error);
@@ -89,11 +114,30 @@ const [DateError, setDateError] = useState('');
 		}
 	}
 
+
+   const handleBtnClick = () => {
+			
+      if (token) {
+       const decoded: any = jwt_decode(token);
+   
+       if (decoded.exp < Date.now() / 1000) {
+          axios.post(`${BACKEND_API_URL}/token/refresh`, { refresh: refresh_token })
+          .then(response => {
+            const newToken = response.data.access;
+            console.log(newToken);
+            localStorage.setItem('token', newToken);
+            window.location.reload();
+          });
+      }
+      
+    }
+ };
+
    return (
       <Container style={{ height:'100vh',marginTop:'100px'}}>
          <Card>
          <CardContent>
-            <IconButton component={Link} sx={{ mr: 3 }} to={`/owners/${ownerId}/details`}>
+            <IconButton component={Link} sx={{ mr: 3 }} to={`/owners/${ownerId}/details`} onClick={handleBtnClick}>
                <ArrowBackIcon />
             </IconButton>{" "}
             <form onSubmit={updateOwner}>

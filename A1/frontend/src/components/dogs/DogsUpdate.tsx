@@ -8,11 +8,14 @@ import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import axios from "axios";
 import { Dogs } from "../../models/Dogs";
+import jwt_decode from 'jwt-decode';
+
 
 export const DogsUpdate = () => {
 const navigate = useNavigate();
 const { dogId } = useParams();
-
+const token = localStorage.getItem('token');
+const refresh_token=localStorage.getItem('refres_token');
 const [dog, setDog] = useState<Dogs>({
     name: "",
     breed: "",
@@ -25,7 +28,11 @@ useEffect(() => {
    const fetchDogs = async () => {
       try {
          
-         const response = await fetch(`${BACKEND_API_URL}/dogs/${dogId}`);
+         const response = await fetch(`${BACKEND_API_URL}/dogs/${dogId}`,{
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+           });
          const dog = await response.json();
          setDog(dog);
          console.log(dog);
@@ -38,8 +45,26 @@ useEffect(() => {
 
 const updateDog = async (event: { preventDefault: () => void }) => {
    event.preventDefault();
+   if (token) {
+      const decoded: any = jwt_decode(token);
+  
+      if (decoded.exp < Date.now() / 1000) {
+         axios.post(`${BACKEND_API_URL}/token/refresh`, { refresh: refresh_token })
+         .then(response => {
+           const newToken = response.data.access;
+           console.log(newToken);
+           localStorage.setItem('token', newToken);
+           window.location.reload();
+         });
+     }
+     
+   }
    try {
-   await axios.put(`${BACKEND_API_URL}/dogs/${dogId}`, dog);
+   await axios.put(`${BACKEND_API_URL}/dogs/${dogId}`, dog,{
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+     });
    navigate("/dogs");
    } catch (error) {
    console.log(error);
@@ -83,11 +108,28 @@ const [DateError, setDateError] = useState('');
 		}
 	}
 
+   const handleBtnClick = () => {
+			
+      if (token) {
+       const decoded: any = jwt_decode(token);
+   
+       if (decoded.exp < Date.now() / 1000) {
+          axios.post(`${BACKEND_API_URL}/token/refresh`, { refresh: refresh_token })
+          .then(response => {
+            const newToken = response.data.access;
+            console.log(newToken);
+            localStorage.setItem('token', newToken);
+            window.location.reload();
+          });
+      }
+      
+    }
+ };
    return (
       <Container style={{ height:'100vh',marginTop:'100px'}}>
          <Card>
          <CardContent>
-            <IconButton component={Link} sx={{ mr: 3 }} to={`/dogs/${dogId}/details`}>
+            <IconButton component={Link} sx={{ mr: 3 }} to={`/dogs/${dogId}/details`} onClick={handleBtnClick}>
                <ArrowBackIcon />
             </IconButton>{" "}
             <form onSubmit={updateDog}>
