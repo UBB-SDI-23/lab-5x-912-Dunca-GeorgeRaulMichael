@@ -27,7 +27,7 @@ from psycopg2.extras import execute_values
 
 if __name__=='__main__':
     from faker import Faker
-
+    #MARK E UN BAIAT
     fake = Faker()
     fake.add_provider(date_time)
     dog_breeds = ['Labrador', 'Corgi', 'Golden Retriever', 'French Bulldog', 'Bulldog', 'Poodle',
