@@ -4,7 +4,6 @@ import random
 from datetime import date, timedelta
 
 import django
-import export as export
 import pytz
 
 #os.environ.setdefault('DEFAULT_SETTINGS_MODULE','dogs.settings')
