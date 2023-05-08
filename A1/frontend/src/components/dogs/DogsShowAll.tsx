@@ -35,10 +35,12 @@ import axios from "axios";
     const [loading, setLoading] = useState(false);
     const [dogs, setDogs] = useState<Dogs[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
-    const totalPages = Math.ceil(1000000 / 10);
-    
+    const page_size = localStorage.getItem('page_nr');
     const token = localStorage.getItem('token');
     const refresh_token=localStorage.getItem('refres_token');
+    const totalPages = page_size ? Math.ceil(1000000 / parseInt(page_size)) : 100000;
+    
+    
     useEffect(() => {
       setLoading(true);
       if (token) {
@@ -56,7 +58,7 @@ import axios from "axios";
         
       }
      
-      fetch(`${BACKEND_API_URL}/dogs/?p=${currentPage}`,{
+      fetch(`${BACKEND_API_URL}/dogs/?p=${currentPage}&page_size=${page_size}`,{
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -120,7 +122,7 @@ import axios from "axios";
       }
       }
       setLoading(true);
-      fetch(`${BACKEND_API_URL}/dogs/?p=${newPage}`,{
+      fetch(`${BACKEND_API_URL}/dogs/?p=${newPage}&page_size=${page_size}`,{
         headers: {
           'Authorization': `Bearer ${token}`
         }

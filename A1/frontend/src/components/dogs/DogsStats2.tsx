@@ -29,11 +29,12 @@ export const DogsStats= () => {
     const[loading, setLoading] = useState(true)
     const [dogs, setDogs] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
-    const totalPages = Math.ceil(1000000 / 10);
+    const page_size = localStorage.getItem('page_nr');
     const token = localStorage.getItem('token');
     const refresh_token=localStorage.getItem('refres_token');
+    const totalPages = page_size ? Math.ceil(1000000 / parseInt(page_size)) : 10;
     useEffect(() => {
-    fetch(`${BACKEND_API_URL}/dogs/nr-of-owners?p=${currentPage}`,{
+    fetch(`${BACKEND_API_URL}/dogs/nr-of-owners?p=${currentPage}&page_size=${page_size}`,{
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -67,7 +68,7 @@ export const DogsStats= () => {
         }
         }
         setLoading(true);
-        fetch(`${BACKEND_API_URL}/dogs/nr-of-owners?p=${newPage}`,{
+        fetch(`${BACKEND_API_URL}/dogs/nr-of-owners?p=${newPage}&page_size=${page_size}`,{
           headers: {
             'Authorization': `Bearer ${token}`
           }

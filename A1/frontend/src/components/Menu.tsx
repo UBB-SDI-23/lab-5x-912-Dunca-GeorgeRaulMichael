@@ -46,6 +46,7 @@ export const AppMenu = () => {
 		  
 			localStorage.removeItem('token');
 			localStorage.removeItem('refres_token');
+			localStorage.removeItem('page_nr');
 			window.location.href = `/login`;
 		
 		

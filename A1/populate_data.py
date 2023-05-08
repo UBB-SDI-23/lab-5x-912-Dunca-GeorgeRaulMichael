@@ -255,16 +255,16 @@ if __name__=='__main__':
         sql = f"CREATE INDEX dogowner_dog_id_idx ON dogs_dogowner(dog_id);"
         file.write(sql + "\n")
 
-        sql = f"CREATE INDEX toy_user_idx ON dogs_toy(user_id);"
+        sql = f"CREATE INDEX toy_user_idx ON dogs_toy(users_id);"
         file.write(sql + "\n")
 
-        sql = f"CREATE INDEX dog_user_idx ON dogs_dog(user_id);"
+        sql = f"CREATE INDEX dog_user_idx ON dogs_dog(users_id);"
         file.write(sql + "\n")
 
-        sql = f"CREATE INDEX owner_user_idx ON dogs_owner(user_id);"
+        sql = f"CREATE INDEX owner_user_idx ON dogs_owner(users_id);"
         file.write(sql + "\n")
 
-        sql = f"CREATE INDEX dogowner_user_idx ON dogs_dogowner(user_id);"
+        sql = f"CREATE INDEX dogowner_user_idx ON dogs_dogowner(users_id);"
         file.write(sql + "\n")
 
 

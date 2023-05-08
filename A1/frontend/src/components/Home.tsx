@@ -60,6 +60,24 @@ export const Home = () => {
 		<React.Fragment>
 			<CssBaseline />
 			<h1>Welcome back, {user.username}!</h1>
+			<TextField
+			id="page_sizes"
+			label="Page Size"
+			variant="outlined"
+			fullWidth
+			sx={{ mb: 2, color: "whitesmoke !important" }}
+			value={user.page_size}
+			type="number"
+			onChange={(event) => {
+				const size = Number(event.target.value);
+				if (size <= 0 || size > 100) {
+					alert("The value needs to be between 1 and 100!");
+					return;
+				}
+				
+				localStorage.setItem('page_nr',size.toString());
+			}}
+			/>
 			<Container style={{ height:'100vh',marginTop:'100px'}}>
 			<Card >
 				<CardContent>

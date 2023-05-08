@@ -32,10 +32,10 @@ import axios from "axios";
     const [loading, setLoading] = useState(false);
     const [owners, setOwners] = useState<Owners[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
-    const totalPages = Math.ceil(1000000 / 10);
+    const page_size = localStorage.getItem('page_nr');
     const token = localStorage.getItem('token');
     const refresh_token=localStorage.getItem('refres_token');
-
+    const totalPages = page_size ? Math.ceil(1000000 / parseInt(page_size)) : 10;
     useEffect(() => {
       setLoading(true);
       if (token) {
@@ -53,7 +53,7 @@ import axios from "axios";
         
       }
       //console.log(currentPage);
-      fetch(`${BACKEND_API_URL}/owners/?p=${currentPage}`,{
+      fetch(`${BACKEND_API_URL}/owners/?p=${currentPage}&page_size=${page_size}`,{
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -98,7 +98,7 @@ import axios from "axios";
         setCurrentPage(currentPage + 1);
         //console.log(currentPage);
         setLoading(true);
-        fetch(`${BACKEND_API_URL}/owners/?p=${currentPage+1}`)
+        fetch(`${BACKEND_API_URL}/owners/?p=${currentPage+1}&page_size=${page_size}`)
         .then((response) => response.json())
         .then((data) => {
           setOwners(data.results);
@@ -114,7 +114,7 @@ import axios from "axios";
         setCurrentPage(currentPage - 1);
         //console.log(currentPage);
         setLoading(true);
-        fetch(`${BACKEND_API_URL}/owners/?p=${currentPage-1}`)
+        fetch(`${BACKEND_API_URL}/owners/?p=${currentPage-1}&page_size=${page_size}`)
         .then((response) => response.json())
         .then((data) => {
           setOwners(data.results);
@@ -141,7 +141,7 @@ import axios from "axios";
         
       }
       setLoading(true);
-      fetch(`${BACKEND_API_URL}/owners/?p=${newPage}`,{
+      fetch(`${BACKEND_API_URL}/owners/?p=${newPage}&page_size=${page_size}`,{
         headers: {
           'Authorization': `Bearer ${token}`
         }

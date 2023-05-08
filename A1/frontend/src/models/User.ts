@@ -1,7 +1,7 @@
 
 
 export interface Users{
-    id?: number;
+    user_id?: number;
     username: string;
     bio: string;
     email: string;
@@ -12,4 +12,5 @@ export interface Users{
     nr_of_owners?: number;
     nr_of_toys?: number;
     nr_of_dogowners?: number;
+    page_size?: number;
 }

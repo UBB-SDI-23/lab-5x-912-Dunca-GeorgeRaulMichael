@@ -36,11 +36,12 @@ import axios from "axios";
     const [loading, setLoading] = useState(false);
     const [toys, setToys] = useState<Toys[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
-    const totalPages = Math.ceil(1000000 / 10);
     const [number, setNumber] = useState(1); // Set initial state to 1
     const [InputValue,setInputValue]=useState(0);
+    const page_size = localStorage.getItem('page_nr');
     const token = localStorage.getItem('token');
     const refresh_token=localStorage.getItem('refres_token');
+    const totalPages = page_size ? Math.ceil(1000000 / parseInt(page_size)) : 10;
 
     useEffect(() => {
       setLoading(true);
@@ -58,7 +59,7 @@ import axios from "axios";
         }
         
       }
-      fetch(`${BACKEND_API_URL}/toys/?p=${currentPage}&price=${InputValue}`,{
+      fetch(`${BACKEND_API_URL}/toys/?p=${currentPage}&price=${InputValue}&page_size=${page_size}`,{
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -179,7 +180,7 @@ import axios from "axios";
         
       }
       setLoading(true);
-      fetch(`${BACKEND_API_URL}/toys/?p=${newPage}&price=${InputValue}`,{
+      fetch(`${BACKEND_API_URL}/toys/?p=${newPage}&price=${InputValue}&page_size=${page_size}`,{
         headers: {
           'Authorization': `Bearer ${token}`
         }
